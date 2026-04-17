@@ -1,10 +1,9 @@
-import { titleFont } from "@/src/config/fonts";
+import { Title } from "@/src/shared/components";
 
 export default function Home() {
   return (
-    <article className="">
-      <h1>Rick Sanchez</h1>
-      <h1 className={titleFont.className}>Morty Smith</h1>
-    </article>
+    <>
+      <Title title="Tienda" subtitle="Todos los productos" className="mb-2" />
+    </>
   );
 }
