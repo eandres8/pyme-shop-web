@@ -1,4 +1,4 @@
-import { PageNotFound } from "@/src/shared/components";
+import { PageNotFound } from "@/src/shared/components/ui";
 
 export default function NotFoundCategory() {
   return (
