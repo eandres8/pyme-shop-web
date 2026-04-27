@@ -1,4 +1,4 @@
-import { TProduct, ValidSizes, ValidTypes } from "../types/product.type";
+import { TProduct, TSize, ValidTypes } from "../types/product.type";
 
 export class Product {
   private constructor(
@@ -7,7 +7,7 @@ export class Product {
     readonly images: string[],
     readonly inStock: number,
     readonly price: number,
-    readonly sizes: ValidSizes[],
+    readonly sizes: TSize[],
     readonly slug: string,
     readonly tags: string[],
     readonly title: string,

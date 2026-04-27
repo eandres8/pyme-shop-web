@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { initialData } from "@/src/data/seed/seed";
 import { titleFont } from "@/src/config/fonts";
+import { SizeSelector } from "@/src/shared/components/product";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -29,6 +30,7 @@ export default async function ProductDetail({ params }: Props) {
         <p className="text-lg mb-5">
           ${product.price}
         </p>
+        <SizeSelector availableSizes={product.sizes} selectedSize="XL" />
         <button className="btn-primary my-5">
           Agregar al carrito
         </button>
