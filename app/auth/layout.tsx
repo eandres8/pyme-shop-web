@@ -1,4 +1,4 @@
-import { TLayoutProps } from "@/src/core/type";
+import { TLayoutProps } from "@/src/core/types";
 
 export default function AuthLayout({ children }: TLayoutProps) {
   return (

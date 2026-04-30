@@ -7,7 +7,7 @@ export default function ShopLayout({ children }: TLayoutProps) {
       <TopMenu />
       <Sidebar />
       
-      <div className="px-4 md:px-10">
+      <div className="md:px-4 lg:px-10">
         <article className="flex justify-center">
           <section className="max-w-7xl">
             {children}
