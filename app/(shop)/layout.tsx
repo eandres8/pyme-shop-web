@@ -1,5 +1,5 @@
 import type { TLayoutProps } from "@/src/core/types";
-import { Sidebar, TopMenu } from "@/src/shared/components/ui";
+import { Footer, Sidebar, TopMenu } from "@/src/shared/components/ui";
 
 export default function ShopLayout({ children }: TLayoutProps) {
   return (
@@ -14,6 +14,8 @@ export default function ShopLayout({ children }: TLayoutProps) {
           </section>
         </div>
       </div>
+
+      <Footer />
     </main>
   );
 }
