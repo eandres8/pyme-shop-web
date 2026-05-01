@@ -1,0 +1,37 @@
+name: pyme-shop
+
+services:
+  app:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: pyme_shop_app
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+    command: pnpm start:dev
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16.6
+    ports:
+      - "5432:5432"
+    environment:
+      DATABASE_HOST: 127.0.0.1
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
