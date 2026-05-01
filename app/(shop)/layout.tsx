@@ -8,11 +8,11 @@ export default function ShopLayout({ children }: TLayoutProps) {
       <Sidebar />
       
       <div className="md:px-4 lg:px-10">
-        <article className="flex justify-center">
-          <section className="max-w-7xl">
+        <div className="flex justify-center">
+          <section className="w-full max-w-7xl">
             {children}
           </section>
-        </article>
+        </div>
       </div>
     </main>
   );
