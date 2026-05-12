@@ -7,7 +7,8 @@
     "start:dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "run:seed": "ts-node ./src/data/seed/seed-database.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
@@ -32,6 +33,7 @@
     "eslint-config-next": "16.2.4",
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

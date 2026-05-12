@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PymeShop
 
 ## Getting Started
 
-First, run the development server:
+First run docker container
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker compose -f docker-compose.dev.yml up --build
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Second, run the development server:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run start:dev
+# or
+yarn start:dev
+# or
+pnpm start:dev
+# or
+bun start:dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+You can run migrations from prisma just like this:
 
-## Learn More
+```bash
+docker exec -it postgres_pyme_shop_db_dev psql -U postgres -c "CREATE DATABASE 'pyme-shop';"
 
-To learn more about Next.js, take a look at the following resources:
+pnpm dlx prisma migrate dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+For create a new migration use:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm dlx prisma migrate dev --name [migration_name]
 
-## Deploy on Vercel
+# Create prisma models from database previous created
+npx prisma pull
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+For create a Prisma Client:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+https://www.prisma.io/docs/prisma-orm/quickstart/prisma-postgres
+
+```bash
+npx prisma generate
+```
