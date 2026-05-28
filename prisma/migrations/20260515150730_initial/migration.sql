@@ -21,7 +21,7 @@ CREATE TABLE "products" (
     "in_stock" INTEGER NOT NULL DEFAULT 0,
     "price" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "sizes" "Size"[] DEFAULT ARRAY[]::"Size"[],
-    "tags" "Size"[] DEFAULT ARRAY[]::"Size"[],
+    "tags" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "gender" "Gender" NOT NULL,
     "category_id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

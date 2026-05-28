@@ -13,11 +13,11 @@ export class Result<T, E = Error> {
     return new Result<T, E>(false, undefined, error);
   }
 
-  getData(): T {
+  data<T>(): T {
     return this.value as T;
   }
 
-  getError(): E {
+  getError<E>(): E {
     return this.error as E;
   }
 }

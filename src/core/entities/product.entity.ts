@@ -1,8 +1,8 @@
-import { TProduct, TSize, ValidTypes } from "../types/product.type";
+import type { TGenderTypes, TProduct, TSize, TValidTypes } from "../types/product.type";
 
 export class Product {
   private constructor(
-    // readonly id: string,
+    readonly id: string,
     readonly description: string,
     readonly images: string[],
     readonly inStock: number,
@@ -11,23 +11,42 @@ export class Product {
     readonly slug: string,
     readonly tags: string[],
     readonly title: string,
-    readonly type: ValidTypes,
-    readonly gender: "men" | "women" | "kid" | "unisex",
+    readonly type: TValidTypes,
+    readonly categoryId: string,
+    readonly gender: TGenderTypes,
   ) {}
 
-  static fromJson(data: TProduct) {
+  static fromJson(data: Partial<TProduct>) {
     return new Product(
-      // data?.id || '',
+      data?.id || '',
       data?.description || '',
       data?.images || [],
       data?.in_stock || 0,
       data?.price || 0,
-      data?.sizes || '',
+      data?.sizes || [],
       data?.slug || '',
       data?.tags || [],
       data?.title || '',
-      data?.type || '',
-      data?.gender || '',
+      data?.type || '' as TValidTypes,
+      data?.category_id || '',
+      data?.gender || '' as TGenderTypes,
     );
+  }
+
+  toJson() {
+    return {
+      ...(this.id ? { id: this.id } : {}),
+      description: this.description,
+      images: this.images,
+      in_stock: this.inStock,
+      price: this.price,
+      sizes: this.sizes,
+      slug: this.slug,
+      tags: this.tags,
+      title: this.title,
+      type: this.type,
+      category_id: this.categoryId,
+      gender: this.gender,
+    };
   }
 }

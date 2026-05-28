@@ -46,7 +46,7 @@ model Product {
   in_stock Int @default(0)
   price Float @default(0)
   sizes Size[] @default([])
-  tags Size[] @default([])
+  tags String[] @default([])
   gender Gender
   category_id String
   created_at DateTime @default(now())

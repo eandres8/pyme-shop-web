@@ -1,0 +1,9 @@
+curl --request POST \
+  --url http://localhost:3000/api/seed \
+  --header 'content-type: application/json' \
+  --data '{}'
+
+###
+
+curl --request GET \
+  --url http://localhost:3000/api/health-check
