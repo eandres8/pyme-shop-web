@@ -11,12 +11,12 @@ export function SeedRepository(client: PrismaClient) {
       client.productImage.deleteMany(),
     ])
       .then((res) => {
-        console.log({ res });
+        logger.log({ res });
 
         return Result.success(true);
       })
       .catch((error) => {
-        console.error("resetTables:", error);
+        logger.error(error);
 
         return Result.failure(new Error(error.message));
       });

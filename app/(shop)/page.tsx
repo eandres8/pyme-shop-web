@@ -1,27 +1,32 @@
-import { Title } from "@/src/shared/components/ui";
-import { initialData } from "@/src/data/seed/seed";
+import { redirect } from "next/navigation";
+
+import { Pagination, Title } from "@/src/shared/components/ui";
 import { ProductGrid } from "@/src/shared/components/product";
-import { Product } from "@/src/core/entities/product.entity";
 import { getPaginatedProductsWithImages } from "@/src/actions";
 
-const products = initialData.products.map((p) =>
-  Product.fromJson({
-    ...p,
-    in_stock: p.inStock,
-  }),
-);
+type Props = {
+  searchParams: Promise<{ page?: string }>;
+};
 
-export default async function Home() {
+export default async function Home({ searchParams }: Props) {
+  const { page } = await searchParams;
 
-  const productsTemp = await getPaginatedProductsWithImages();
+  const { data, currentPage, totalPages } = await getPaginatedProductsWithImages({
+    page: page ? Number(page) : undefined,
+  });
 
+  if (!data.length) {
+    redirect('/');
+  }
 
   return (
     <>
       <Title title="Tienda" subtitle="Todos los productos" className="mb-2" />
       <ProductGrid
-        products={products}
+        products={data}
       />
+
+      <Pagination totalPages={totalPages} currentPage={currentPage} /> 
     </>
   );
 }
