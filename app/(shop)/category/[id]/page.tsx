@@ -1,16 +1,8 @@
-import { notFound } from "next/navigation";
+export const revalidate = 86400; // 24 horas
 
-import { Product } from "@/src/core/entities";
-import { initialData } from "@/src/data/seed/seed";
 import { ProductGrid } from "@/src/shared/components/product";
-import { Title } from "@/src/shared/components/ui";
-
-const products = initialData.products.map((p) =>
-  Product.fromJson({
-    ...p,
-    in_stock: p.inStock,
-  }),
-);
+import { Pagination, Title } from "@/src/shared/components/ui";
+import { getPaginatedProductsWithImages } from "@/src/actions";
 
 const subtitles: Record<string, string> = {
   men: 'Hombres',
@@ -20,23 +12,26 @@ const subtitles: Record<string, string> = {
 
 type Props = {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ page?: string }>;
 };
 
-export default async function Category({ params }: Props) {
+export default async function Category({ params, searchParams }: Props) {
   const { id } = await params;
+  const { page, } = await searchParams;
 
-  if (!['men', 'women', 'kid'].includes(id)) {
-    notFound();
-  }
-
-  const filteredProducts = products.filter((p) => p.gender === id);
+  const { data, currentPage, totalPages } = await getPaginatedProductsWithImages({
+    page: page ? Number(page) : undefined,
+    category: id,
+  });
 
   return (
     <>
       <Title title={`Artículos de ${subtitles[id]}`} subtitle="Todos los productos" className="mb-2" />
       <ProductGrid
-        products={filteredProducts}
+        products={data}
       />
+
+      <Pagination totalPages={totalPages} currentPage={currentPage} /> 
     </>
   ); 
 }

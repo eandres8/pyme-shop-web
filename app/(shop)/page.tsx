@@ -1,3 +1,5 @@
+export const revalidate = 86400; // 24 horas
+
 import { redirect } from "next/navigation";
 
 import { Pagination, Title } from "@/src/shared/components/ui";

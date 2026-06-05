@@ -6,12 +6,13 @@ import { TPagination } from "@/src/core/types";
 type TListProps = {
   page: number;
   take: number;
+  category?: string;
 };
 
 export function ProductRepository(client: PrismaClient) {
   const logger = Logger('ProductRepository');
 
-  const listProducts = async ({ page, take }: TListProps) => {
+  const listProducts = async ({ page, take, category }: TListProps) => {
     const [result, error] = await to(client.product.findMany({
       take,
       skip: ( page - 1 ) * take,
@@ -20,7 +21,11 @@ export function ProductRepository(client: PrismaClient) {
           take: 2,
           select: { url: true }
         },
-      }
+      },
+      where: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        gender: category as any,
+      },
     }));
 
     if (error) {
@@ -35,8 +40,13 @@ export function ProductRepository(client: PrismaClient) {
     } as any)));
   }
 
-  const countProducts = async ({ page, take }: TListProps) => {
-    const [result, error] = await to(client.product.count({}));
+  const countProducts = async ({ page, take, category }: TListProps) => {
+    const [result, error] = await to(client.product.count({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        gender: category as any,
+      },
+    }));
 
     if (error) {
       logger.log({ error });
