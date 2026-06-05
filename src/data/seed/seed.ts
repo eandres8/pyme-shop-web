@@ -8,7 +8,7 @@ interface SeedProduct {
   tags: string[];
   title: string;
   type: ValidTypes;
-  gender: "men" | "women" | "kid" | "unisex";
+  gender: "men" | "women" | "kid" | "men";
 }
 
 type ValidSizes = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL";
@@ -395,7 +395,7 @@ export const initialData: SeedData = {
       type: "hoodies",
       tags: ["hoodie"],
       title: "3D Large Wordmark Pullover Hoodie",
-      gender: "unisex",
+      gender: "men",
     },
     {
       description:
@@ -408,7 +408,7 @@ export const initialData: SeedData = {
       type: "hoodies",
       tags: ["hoodie"],
       title: "Cybertruck Graffiti Hoodie",
-      gender: "unisex",
+      gender: "men",
     },
     {
       description:
@@ -421,7 +421,7 @@ export const initialData: SeedData = {
       type: "hats",
       tags: ["hats"],
       title: "Relaxed T Logo Hat",
-      gender: "unisex",
+      gender: "men",
     },
     {
       description:
@@ -434,7 +434,7 @@ export const initialData: SeedData = {
       type: "hats",
       tags: ["hats"],
       title: "Thermal Cuffed Beanie",
-      gender: "unisex",
+      gender: "men",
     },
     {
       description:

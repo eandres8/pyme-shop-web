@@ -33,7 +33,7 @@ export class Product {
     );
   }
 
-  toJson() {
+  toJson(): Partial<TProduct> {
     return {
       ...(this.id ? { id: this.id } : {}),
       description: this.description,

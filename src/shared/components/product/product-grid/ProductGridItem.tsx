@@ -4,13 +4,15 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
-import { Product } from "@/src/core/entities/product.entity";
+import { TProduct } from "@/src/core/types/product.type";
+import { Product } from "@/src/core/entities";
 
 type Props = {
-  product: Product;
+  product: Partial<TProduct>;
 };
 
-export const ProductGridItem: React.FC<Props> = ({ product }) => {
+export const ProductGridItem: React.FC<Props> = ({ product: p }) => {
+  const product = Product.fromJson(p);
   const [displayImage, setDisplayImage] = useState(product.images.at(0));
 
   return (
