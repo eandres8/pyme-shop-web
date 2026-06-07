@@ -5,8 +5,8 @@ import {
   CategoryRepository,
   ProductRepository,
   SeedRepository,
-} from "@/src/data/repositories";
-import { initialData } from "@/src/data/seed/seed";
+} from "@/src/data/server/repositories";
+import { initialData } from "@/src/data/server/seed/seed";
 
 const productRepository = new ProductRepository(prismaDbClient);
 const categoryRepository = CategoryRepository(prismaDbClient);

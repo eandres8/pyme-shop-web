@@ -1,6 +1,6 @@
 import { PrismaClient } from "@/prisma/generated/prisma/client";
-import { Logger, Result, to } from "../core";
 import { Category } from "@/src/core/entities";
+import { Logger, Result, to } from "../../core";
 
 export function CategoryRepository(client: PrismaClient) {
   const logger = Logger('CategoryRepository');

@@ -1,6 +1,6 @@
 import { PrismaClient } from "@/prisma/generated/prisma/client";
 import { Product } from "@/src/core/entities";
-import { Logger, Result, to } from "../core";
+import { Logger, Result, to } from "../../core";
 import { TPagination } from "@/src/core/types";
 import { TProductEntity } from "@/src/core/types/product.type";
 

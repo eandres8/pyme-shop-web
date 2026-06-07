@@ -1,5 +1,5 @@
 import { PrismaClient } from "@/prisma/generated/prisma/client";
-import { Logger, Result } from "../core";
+import { Logger, Result } from "../../core";
 
 export function SeedRepository(client: PrismaClient) {
   const logger = Logger('SeedRepository');
