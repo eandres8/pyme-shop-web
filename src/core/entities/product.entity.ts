@@ -1,4 +1,4 @@
-import type { TGenderTypes, TProduct, TSize, TValidTypes } from "../types/product.type";
+import type { TGenderTypes, TProduct, TProductEntity, TSize, TValidTypes } from "../types/product.type";
 
 export class Product {
   private constructor(
@@ -21,6 +21,23 @@ export class Product {
       data?.id || '',
       data?.description || '',
       data?.images || [],
+      data?.in_stock || 0,
+      data?.price || 0,
+      data?.sizes || [],
+      data?.slug || '',
+      data?.tags || [],
+      data?.title || '',
+      data?.type || '' as TValidTypes,
+      data?.category_id || '',
+      data?.gender || '' as TGenderTypes,
+    );
+  }
+
+  static fromEntity(data: Partial<TProductEntity>) {
+    return new Product(
+      data?.id || '',
+      data?.description || '',
+      (data?.productImages || []).map((pi) => pi.url),
       data?.in_stock || 0,
       data?.price || 0,
       data?.sizes || [],

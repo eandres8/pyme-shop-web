@@ -8,7 +8,7 @@ import {
 } from "@/src/data/repositories";
 import { initialData } from "@/src/data/seed/seed";
 
-const productRepository = ProductRepository(prismaDbClient);
+const productRepository = new ProductRepository(prismaDbClient);
 const categoryRepository = CategoryRepository(prismaDbClient);
 const seedRepository = SeedRepository(prismaDbClient);
 

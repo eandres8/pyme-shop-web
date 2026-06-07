@@ -4,7 +4,10 @@ import { inter } from "@/src/config/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Pyme Shop",
+  title: {
+    template: '%s - Pyme Shop',
+    default: 'Home',
+  },
   description: "Tienda para ofrecer al público productos de pequeños empresarios",
 };
 

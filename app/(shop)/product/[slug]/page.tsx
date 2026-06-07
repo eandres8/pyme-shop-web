@@ -1,23 +1,46 @@
+export const revalidate = 604800; // 7 days
+
+import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
 import { IoLogoWhatsapp } from "react-icons/io5";
 
-import { initialData } from "@/src/data/seed/seed";
 import { titleFont } from "@/src/config/fonts";
 import {
   ProductMobileSlideShow,
   ProductSlideShow,
   QuantitySelector,
   SizeSelector,
+  StockLabel,
 } from "@/src/shared/components/product";
+import { getProductBySlug } from "@/src/actions";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+ 
+export async function generateMetadata(
+  { params }: Props,
+  _parent: ResolvingMetadata
+): Promise<Metadata> {
+  const slug = (await params).slug
+ 
+  const product = await getProductBySlug(slug);
+ 
+  return {
+    title: product.title,
+    description: product.description,
+    openGraph: {
+      title: product.title,
+      description: product.description,
+      images:[`/images/products/${product.images.at(1)}`]
+    }
+  }
+}
 
 export default async function ProductDetail({ params }: Props) {
   const { slug } = await params;
 
-  const product = initialData.products.find((p) => p.slug === slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
@@ -34,6 +57,8 @@ export default async function ProductDetail({ params }: Props) {
       </div>
 
       <div className="col-span-1 px-5">
+        <StockLabel slug={product.slug} />
+
         <h1 className={`${titleFont.className} antialiased font-bold text-xl`}>
           {product.title}
         </h1>

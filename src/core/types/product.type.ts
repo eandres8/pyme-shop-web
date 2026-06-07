@@ -17,3 +17,24 @@ export type TProduct = {
   readonly gender: TGenderTypes;
 }
 
+export type TProductImage = {
+  url: string;
+}
+
+export type TProductEntity = {
+  readonly id: string;
+  readonly description: string;
+  readonly productImages: TProductImage[];
+  readonly in_stock: number;
+  readonly price: number;
+  readonly sizes: TSize[];
+  readonly slug: string;
+  readonly tags: string[];
+  readonly title: string;
+  readonly type: TValidTypes;
+  readonly category_id: string;
+  readonly gender: TGenderTypes;
+  readonly created_at: Date;
+  readonly updated_at: Date;
+}
+

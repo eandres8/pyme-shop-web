@@ -11,7 +11,7 @@ type Props = {
   category?: string;
 };
 
-const productRepository = ProductRepository(prismaDbClient);
+const productRepository = new ProductRepository(prismaDbClient);
 
 export const getPaginatedProductsWithImages = async (props: Props) => {
   const { page = 1, take = 10, category } = props;
