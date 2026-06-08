@@ -18,7 +18,7 @@ export type TProduct = {
 }
 
 export type TProductImage = {
-  url: string;
+  readonly url: string;
 }
 
 export type TProductEntity = {
@@ -38,3 +38,12 @@ export type TProductEntity = {
   readonly updated_at: Date;
 }
 
+export type TCartProduct = {
+  readonly id: string;
+  readonly slug: string;
+  readonly title: string;
+  readonly price: number;
+  readonly quantity: number;
+  readonly size: TSize;
+  readonly image: string;
+};

@@ -3,13 +3,15 @@ import clsx from "clsx";
 import { TSize } from "@/src/core/types/product.type";
 
 type Props = {
-  selectedSize: TSize;
+  selectedSize?: TSize;
   availableSizes: TSize[];
+  onSizeChanged: (size: TSize) => void;
 };
 
 export const SizeSelector: React.FC<Props> = ({
   availableSizes,
   selectedSize,
+  onSizeChanged,
 }) => {
   return (
     <div className="my-5">
@@ -18,7 +20,8 @@ export const SizeSelector: React.FC<Props> = ({
         {availableSizes.map((sz) => (
           <button
             key={sz}
-            className={clsx("mx-2 hover:underline text-lg", {
+            onClick={() => onSizeChanged(sz)}
+            className={clsx("mx-2 hover:underline text-lg hover:cursor-pointer", {
               underline: selectedSize === sz,
             })}
           >

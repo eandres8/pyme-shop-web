@@ -2,17 +2,16 @@ export const revalidate = 604800; // 7 days
 
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
-import { IoLogoWhatsapp } from "react-icons/io5";
+
 
 import { titleFont } from "@/src/config/fonts";
 import {
   ProductMobileSlideShow,
   ProductSlideShow,
-  QuantitySelector,
-  SizeSelector,
   StockLabel,
 } from "@/src/shared/components/product";
 import { getProductBySlug } from "@/src/server/actions";
+import { AddToCart } from './ui/add-to-cart/AddToCart';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -63,13 +62,8 @@ export default async function ProductDetail({ params }: Props) {
           {product.title}
         </h1>
         <p className="text-lg mb-5">${product.price}</p>
-        <SizeSelector availableSizes={product.sizes} selectedSize="XL" />
-
-        <QuantitySelector quantity={1} />
-
-        <button className="flex items-center justify-center gap-2 btn-primary my-5">
-          Lo quiero <IoLogoWhatsapp size={20} />
-        </button>
+        
+        <AddToCart product={product.toJson()} />
 
         <h3 className="font-bold text-sm">Descripción</h3>
         <p className="font-light">{product.description}</p>
