@@ -75,7 +75,7 @@ export const AddToCart: React.FC<Props> = ({ isPremium, product }) => {
       ) : (
         <button
           className="flex items-center justify-center gap-2 btn-primary my-5 cursor-pointer"
-          onClick={addToCart}
+          onClick={() => console.log('added to whatsapp')}
         >
           Lo quiero <IoLogoWhatsapp size={20} />
         </button>

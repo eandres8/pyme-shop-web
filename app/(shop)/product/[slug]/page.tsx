@@ -63,7 +63,7 @@ export default async function ProductDetail({ params }: Props) {
         </h1>
         <p className="text-lg mb-5">${product.price}</p>
         
-        <AddToCart product={product.toJson()} />
+        <AddToCart product={product.toJson()} isPremium />
 
         <h3 className="font-bold text-sm">Descripción</h3>
         <p className="font-light">{product.description}</p>

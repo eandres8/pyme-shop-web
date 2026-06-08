@@ -1,15 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 
 import { Title } from "@/src/shared/components/ui";
-import { QuantitySelector } from "@/src/shared/components/product";
-import { Product } from "@/src/core/entities";
+import { ProductCartList } from "./ui/product-cart-list/ProductCartList";
+import { OrderSummary } from "./ui/order-summary/OrderSummary";
 
 export default function CartPage() {
-  const products: Product[] = [];
-
-  // redirect('/empty');
-
   return (
     <div className="flex justify-center items-center mb-72 px-10 sm:px-0">
       <div className="flex flex-col w-250">
@@ -24,62 +19,12 @@ export default function CartPage() {
             </Link>
 
             {/* Items */}
-            {products.map((product) => (
-              <div key={product.slug} className="flex">
-                <Image
-                  src={`/images/products/${product.images.at(0)}`}
-                  alt={product.title}
-                  width={100}
-                  height={100}
-                  style={{
-                    width: '100px',
-                    height: '100px',
-                  }}
-                  className="mr-5 rounded"
-                />
-
-                <div>
-                  <p>{product.title}</p>
-                  <p>${product.price}</p>
-                  <QuantitySelector quantity={3} />
-                  <button className="underline mt-3">Remover</button>
-                </div>
-              </div>
-            ))}
+            <ProductCartList />
+            
           </div>
 
           {/* Checkout */}
-          <div className="flex flex-col gap-2 bg-white rounded-xl shadow-xl p-7 h-fit">
-            <h2 className="text-2xl mb-2 font-semibold">Resumen de orden</h2>
-
-            <div className="flex flex-col mb-2">
-              <div className="flex justify-between">
-                <span>No. Productos</span>
-                <span>{products.length} artículos</span>
-              </div>
-              
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>$ 1200</span>
-              </div>
-              
-              <div className="flex justify-between">
-                <span>Impuestos (15%)</span>
-                <span>$ 1200</span>
-              </div>
-              
-              <div className="flex justify-between mt-2">
-                <span className="text-2xl">Total:</span>
-                <span className="text-2xl text-right">$ 1200</span>
-              </div>
-            </div>
-
-            <div className="mb-2 w-full">
-              <Link href="/checkout/address" className="flex btn-primary justify-center">
-                Checkout
-              </Link>
-            </div>
-          </div>
+          <OrderSummary />
         </div>
       </div>
     </div>
