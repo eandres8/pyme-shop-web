@@ -1,4 +1,4 @@
-import type { TUser, TUserEntity } from "../types";
+import type { TPublicUser, TUser, TUserEntity, TUserRole } from "../types";
 
 export class User {
   private constructor(
@@ -33,5 +33,16 @@ export class User {
       data?.role || '',
       data?.image || '',
     );
+  }
+
+  toPublic(): TPublicUser {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      email_verified: this.emailVerified?.toISOString() || '',
+      role: this.role as TUserRole,
+      image: this.image,
+    };
   }
 }

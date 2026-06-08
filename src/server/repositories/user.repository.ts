@@ -1,5 +1,5 @@
 import { PrismaClient } from "@/prisma/generated/prisma/client";
-import { User } from "@/src/core/entities/user.entity";
+import { User } from "@/src/core/entities";
 import type { TUserEntity } from "@/src/core/types";
 import { Logger, Result, to } from "@/src/core/utils";
 
@@ -32,7 +32,25 @@ export function UserRepository(client: PrismaClient) {
     return Result.success(data);
   };
 
+  const findByEmail = async (email: string) => {
+    const [result, error] = await to(
+      client.user.findUnique({ where: { email } }),
+    );
+
+    if (error) {
+      logger.log({ error });
+      return Result.failure(
+        new Error(error?.message || "Error creando el usuario"),
+      );
+    }
+
+    const data = User.fromEntity(result as unknown as TUserEntity);
+
+    return Result.success(data);
+  }
+
   return {
     create,
+    findByEmail,
   }
 }

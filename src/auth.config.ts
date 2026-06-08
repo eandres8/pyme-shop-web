@@ -1,6 +1,10 @@
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
+import bcrypt from "bcryptjs";
+
+import { userRepository } from "./server/providers";
+import { User } from "./core/entities";
 
 export const authConfig = {
   pages: {
@@ -20,10 +24,19 @@ export const authConfig = {
 
         const { email, password } = parsedCredentials.data;
 
-        console.log('authConfig');
-        console.log({ email, password });
+        const result = await userRepository.findByEmail(email.toLowerCase());
 
-        return null;
+        if (!result.isOk) {
+          return null;
+        }
+
+        const user = result.data<User>();
+
+        if (!bcrypt.compareSync(password, user.password)) {
+          return null;
+        }
+
+        return user.toPublic();
       },
     }),
   ],

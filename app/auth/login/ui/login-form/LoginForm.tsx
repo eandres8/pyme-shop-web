@@ -5,6 +5,7 @@ import Link from "next/link";
 import { IoAlertCircleOutline } from "react-icons/io5";
 
 import { authenticate } from "@/src/server/actions";
+import clsx from "clsx";
 
 export const LoginForm: React.FC = () => {
   const [errorMessage, formAction, isPending] = useActionState(
@@ -28,7 +29,15 @@ export const LoginForm: React.FC = () => {
         name="password"
       />
 
-      <button type="submit" className="cursor-pointer btn-primary">
+      <button
+        type="submit"
+        className={clsx({
+          "cursor-pointer btn-primary": !isPending,
+          "btn-disabled": isPending,
+        })}
+        aria-disabled={isPending}
+        disabled={isPending}
+      >
         Ingresar
       </button>
       {errorMessage && (
