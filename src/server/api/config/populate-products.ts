@@ -1,18 +1,27 @@
 import { prismaDbClient } from "@/src/config/database/prisma-client";
 import { Category, Product } from "@/src/core/entities";
+import { User } from "@/src/core/entities/user.entity";
 import { Logger } from "@/src/core/utils";
-import { ProductRepository, CategoryRepository, SeedRepository } from "@/src/server/repositories";
-import { initialData } from "@/src/server/seed/seed";
+import { ProductRepository, CategoryRepository, SeedRepository, UserRepository } from "@/src/server/repositories";
+import { initialData, initialUsersData } from "@/src/server/seed/seed";
 
 const productRepository = new ProductRepository(prismaDbClient);
 const categoryRepository = CategoryRepository(prismaDbClient);
 const seedRepository = SeedRepository(prismaDbClient);
+const userRepository = UserRepository(prismaDbClient);
 
 export class PopulateProducts {
   readonly logger = Logger("PopulateProducts");
 
   async populate() {
     await seedRepository.resetTables();
+
+    const results = await Promise.all([
+      userRepository.create(User.fromJson(initialUsersData.at(0)!)),
+      userRepository.create(User.fromJson(initialUsersData.at(1)!)),
+    ])
+
+    this.logger.log(results);
 
     const resultCategory = await categoryRepository.createCategories([
       "Pants",

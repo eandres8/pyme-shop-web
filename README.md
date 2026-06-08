@@ -34,6 +34,9 @@ For create a new migration use:
 ```bash
 pnpm dlx prisma migrate dev --name [migration_name]
 
+## [!IMPORTANT] for update models into generated migrations models
+pnpm dlx prisma generate
+
 # Create prisma models from database previous created
 npx prisma pull
 ```
