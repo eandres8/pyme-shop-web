@@ -2,7 +2,7 @@
 
 import { prismaDbClient } from "@/src/config/database/prisma-client";
 import { Product } from "@/src/core/entities";
-import { ProductRepository } from "@/src/data/server/repositories";
+import { ProductRepository } from "../../repositories";
 
 const productRepository = new ProductRepository(prismaDbClient);
 

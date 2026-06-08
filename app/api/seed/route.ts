@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { PopulateProducts } from '@/src/api/config/populate-products';
+import { PopulateProducts } from '@/src/server/api/config/populate-products';
 
 export async function POST(_: NextRequest) {
     // Parse the request body

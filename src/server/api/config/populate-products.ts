@@ -1,12 +1,8 @@
 import { prismaDbClient } from "@/src/config/database/prisma-client";
 import { Category, Product } from "@/src/core/entities";
-import { Logger } from "@/src/data/core";
-import {
-  CategoryRepository,
-  ProductRepository,
-  SeedRepository,
-} from "@/src/data/server/repositories";
-import { initialData } from "@/src/data/server/seed/seed";
+import { Logger } from "@/src/core/utils";
+import { ProductRepository, CategoryRepository, SeedRepository } from "@/src/server/repositories";
+import { initialData } from "@/src/server/seed/seed";
 
 const productRepository = new ProductRepository(prismaDbClient);
 const categoryRepository = CategoryRepository(prismaDbClient);

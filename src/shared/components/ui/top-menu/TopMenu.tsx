@@ -4,7 +4,7 @@ import Link from "next/link";
 import { IoSearchOutline, IoCartOutline } from 'react-icons/io5';
 
 import { titleFont } from "@/src/config/fonts";
-import { useUIStore } from "@/src/data/client/stores";
+import { useUIStore } from "@/src/client/stores";
 
 export const TopMenu = () => {
   const closeMenu = useUIStore((state) => state.openSideMenu);

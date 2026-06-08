@@ -13,7 +13,7 @@ import {
 } from "react-icons/io5";
 import clsx from "clsx";
 
-import { useUIStore } from "@/src/data/client/stores";
+import { useUIStore } from "@/src/client/stores";
 
 export const Sidebar = () => {
   const isSideMenuOpen = useUIStore((state) => state.isSideMenuOpen);

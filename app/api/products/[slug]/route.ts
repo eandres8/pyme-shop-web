@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { prismaDbClient } from "@/src/config/database/prisma-client";
-import { ProductRepository } from "@/src/data/server/repositories";
 import { Product } from "@/src/core/entities";
+import { ProductRepository } from "@/src/server/repositories";
 
 const productRepository = new ProductRepository(prismaDbClient);
 

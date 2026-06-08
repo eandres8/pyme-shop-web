@@ -3,7 +3,7 @@
 import { prismaDbClient } from "@/src/config/database/prisma-client";
 import { Product } from "@/src/core/entities";
 import { TPaginateData } from "@/src/core/types";
-import { ProductRepository } from "@/src/data/server/repositories";
+import { ProductRepository } from "../../repositories";
 
 type Props = {
   page?: number;

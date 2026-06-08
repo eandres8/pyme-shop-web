@@ -1,14 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 
 import { Title } from "@/src/shared/components/ui";
-import { initialData } from "@/src/data/seed/seed";
 import { QuantitySelector } from "@/src/shared/components/product";
-
-const productsInCart = [...initialData.products.slice(0, 3)];
+import { Product } from "@/src/core/entities";
 
 export default function CartPage() {
+  const products: Product[] = [];
 
   // redirect('/empty');
 
@@ -26,7 +24,7 @@ export default function CartPage() {
             </Link>
 
             {/* Items */}
-            {productsInCart.map((product) => (
+            {products.map((product) => (
               <div key={product.slug} className="flex">
                 <Image
                   src={`/images/products/${product.images.at(0)}`}
@@ -57,7 +55,7 @@ export default function CartPage() {
             <div className="flex flex-col mb-2">
               <div className="flex justify-between">
                 <span>No. Productos</span>
-                <span>{productsInCart.length} artículos</span>
+                <span>{products.length} artículos</span>
               </div>
               
               <div className="flex justify-between">

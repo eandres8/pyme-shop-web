@@ -3,9 +3,9 @@ import { IoCardOutline } from "react-icons/io5";
 import clsx from "clsx";
 
 import { Title } from "@/src/shared/components/ui";
-import { initialData } from "@/src/data/seed/seed";
+import { Product } from "@/src/core/entities";
 
-const productsInCart = [...initialData.products.slice(0, 3)];
+const productsInCart: Product[] = [];
 
 type Props = {
   params: Promise<{ id: string }>;

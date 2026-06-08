@@ -1,8 +1,9 @@
 export const revalidate = 86400; // 24 horas
 
+import { getPaginatedProductsWithImages } from "@/src/server/actions";
 import { ProductGrid } from "@/src/shared/components/product";
 import { Pagination, Title } from "@/src/shared/components/ui";
-import { getPaginatedProductsWithImages } from "@/src/actions";
+
 
 const subtitles: Record<string, string> = {
   men: 'Hombres',

@@ -12,7 +12,7 @@ import {
   SizeSelector,
   StockLabel,
 } from "@/src/shared/components/product";
-import { getProductBySlug } from "@/src/actions";
+import { getProductBySlug } from "@/src/server/actions";
 
 type Props = {
   params: Promise<{ slug: string }>;

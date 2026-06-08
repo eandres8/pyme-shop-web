@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { Pagination, Title } from "@/src/shared/components/ui";
 import { ProductGrid } from "@/src/shared/components/product";
-import { getPaginatedProductsWithImages } from "@/src/actions";
+import { getPaginatedProductsWithImages } from "@/src/server/actions";
 
 type Props = {
   searchParams: Promise<{ page?: string }>;
