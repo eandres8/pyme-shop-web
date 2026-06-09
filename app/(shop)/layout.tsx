@@ -1,7 +1,7 @@
 import type { TLayoutProps } from "@/src/core/types";
 import { Footer, Sidebar, TopMenu } from "@/src/shared/components/ui";
 
-export default function ShopLayout({ children }: TLayoutProps) {
+export default async function ShopLayout({ children }: TLayoutProps) {
   return (
     <main className="min-h-screen">
       <TopMenu />
