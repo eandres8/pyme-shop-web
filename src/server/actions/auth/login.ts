@@ -1,9 +1,9 @@
 'use server';
  
-import { signIn } from '@/src/auth.config';
 import { AuthError } from 'next-auth';
- 
-// ...
+
+import { signIn } from '@/src/auth.config';
+import { to } from '@/src/core/utils';
  
 export async function authenticate(
   prevState: string | undefined,
@@ -12,8 +12,6 @@ export async function authenticate(
   try {
     await signIn('credentials', formData);
   } catch (error) {
-    console.log('authenticate::error');
-    console.log(error);
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
@@ -25,3 +23,16 @@ export async function authenticate(
     throw error;
   }
 }
+
+export const login = async (email: string, password: string) => {
+  const [_, error] = await to(signIn('credentials', { email, password }));
+
+  if (error) {
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
+
+  return { success: true };
+};

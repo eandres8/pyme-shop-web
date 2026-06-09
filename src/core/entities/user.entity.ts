@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import type { TPublicUser, TUser, TUserEntity, TUserRole } from "../types";
 
 export class User {
@@ -7,7 +8,7 @@ export class User {
     readonly email: string,
     readonly emailVerified: Date | null,
     readonly password: string,
-    readonly role: string,
+    readonly role: TUserRole,
     readonly image: string,
   ) {}
 
@@ -15,10 +16,10 @@ export class User {
     return new User(
       data?.id || '',
       data?.name || '',
-      data?.email || '',
+      data?.email?.toLowerCase() || '',
       data?.email_verified ? new Date(data.email_verified) : null,
       data?.password || '',
-      data?.role || '',
+      data?.role || 'user',
       data?.image || '',
     );
   }
@@ -27,12 +28,35 @@ export class User {
     return new User(
       data?.id || '',
       data?.name || '',
-      data?.email || '',
+      data?.email?.toLowerCase() || '',
       data?.emailVerified || null,
       data?.password || '',
-      data?.role || '',
+      data?.role || 'user',
       data?.image || '',
     );
+  }
+
+  copyWith(data: Partial<TUser>) {
+    return new User(
+      data?.id || this.id,
+      data?.name || this.name,
+      data?.email?.toLowerCase() || this.email,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      data?.email_verified || this.emailVerified as any,
+      data?.password || this.password,
+      data?.role || this.role,
+      data?.image || this.image,
+    );
+  }
+
+  cipherPass() {
+    if (!this.password) {
+      throw new Error('Invalid password');
+    }
+
+    return this.copyWith({
+      password: bcrypt.hashSync(this.password),
+    });
   }
 
   toPublic(): TPublicUser {

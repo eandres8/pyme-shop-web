@@ -25,8 +25,6 @@ export const Sidebar = () => {
   const isAuthenticated = !!session.data?.user;
   const isAdmin = session.data?.user?.role === 'admin';
 
-  console.log({ isAuthenticated, isAdmin });
-
   return (
     <div>
 
