@@ -7,7 +7,7 @@ export default async function AuthLayout({ children }: TLayoutProps) {
   const session = await auth();
   
   if (session?.user) {
-    redirect('/');
+    redirect('/', 'replace');
   }
 
   return (

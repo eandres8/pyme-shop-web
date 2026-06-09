@@ -11,6 +11,23 @@ export const authConfig = {
     signIn: "/auth/login",
     newUser: "/auth/new-account"
   },
+
+  callbacks: {
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.data = user;
+      }
+
+      return token;
+    },
+
+    session: ({ session, token }) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      session.user = token.data as any;
+      return session;
+    }
+  },
+
   providers: [
     Credentials({
       async authorize(credentials) {
@@ -42,4 +59,4 @@ export const authConfig = {
   ],
 } satisfies NextAuthConfig;
 
-export const { signIn, signOut, auth } = NextAuth(authConfig);
+export const { signIn, signOut, auth, handlers } = NextAuth(authConfig);

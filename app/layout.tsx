@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
-import { inter } from "@/src/config/fonts";
 import "./globals.css";
+import { inter } from "@/src/config/fonts";
+import { AuthProvider } from "@/src/client/providers";
 
 export const metadata: Metadata = {
   title: {
@@ -21,7 +22,11 @@ export default function RootLayout({
       lang="en"
       className={`${inter.className} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }
