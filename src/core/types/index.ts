@@ -1,3 +1,4 @@
+export * from './address.type';
 export * from './country.type';
 export * from './general.type';
 export * from './product.type';

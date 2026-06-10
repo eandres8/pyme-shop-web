@@ -1,3 +1,7 @@
+type TJsonData<T> =
+  | { success: true; data: T }
+  | { success: false; message: string };
+
 export class Result<T, E = Error> {
   private constructor(
     readonly isOk: boolean,
