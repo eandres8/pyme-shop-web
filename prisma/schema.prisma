@@ -88,3 +88,10 @@ model User {
 
   @@map("users")
 }
+
+model Country {
+  id String @id @default(uuid())
+  name String
+
+  @@map("cities")
+}
