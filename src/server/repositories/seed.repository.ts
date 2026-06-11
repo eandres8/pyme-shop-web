@@ -7,6 +7,9 @@ export function SeedRepository(client: PrismaClient) {
 
   const resetTables = async () => {
     return Promise.all([
+      client.orderAddress.deleteMany(),
+      client.orderItem.deleteMany(),
+      client.order.deleteMany(),
       client.user.deleteMany(),
       client.userAddress.deleteMany(),
       client.country.deleteMany(),

@@ -57,10 +57,13 @@ model Product {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
+  // Relations
   category Category @relation(fields: [category_id], references: [id])
 
   productImages ProductImage[]
+  orderItems OrderItem[]
 
+  // metadata
   @@index([gender])
   @@map("products")
 }
@@ -69,9 +72,11 @@ model ProductImage {
   id  String @id @default(uuid())
   url String
 
+  // Relations
   product    Product @relation(fields: [product_id], references: [id])
   product_id String
 
+  // metadata
   @@map("product_images")
 }
 
@@ -86,8 +91,11 @@ model User {
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
+  // Relations
   address UserAddress?
+  orders Order[]
 
+  // metadata
   @@map("users")
 }
 
@@ -95,8 +103,11 @@ model Country {
   id   String @id
   name String
 
+  // Relations
   userAddresses UserAddress[]
+  orderAddresses OrderAddress[]
 
+  // metadata
   @@map("cities")
 }
 
@@ -113,11 +124,75 @@ model UserAddress {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
+  // Relations
   country   Country @relation(fields: [country_id], references: [id])
   country_id String
 
   user User @relation(fields: [user_id], references: [id])
   user_id String @unique
 
+  // metadata
   @@map("user_addresses")
+}
+
+
+model Order {
+  id String @id @default(uuid())
+  subtotal Float
+  tax Float
+  total Float
+  items_in_order Int
+  is_paid Boolean
+  paid_at DateTime?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user   User @relation(fields: [user_id], references: [id])
+  user_id String
+
+  orderItems OrderItem[]
+
+  orderAddresses OrderAddress?
+
+  // metadata
+  @@map("orders")
+}
+
+model OrderItem {
+  id String @id @default(uuid())
+  quantity Int
+  price Float
+  size Size
+
+  // Relations
+  order   Order @relation(fields: [order_id], references: [id])
+  order_id String
+
+  product   Product @relation(fields: [product_id], references: [id])
+  product_id String
+
+  // metadata
+  @@map("order_items")
+}
+
+model OrderAddress {
+  id String @id @default(uuid())
+  first_name String
+  last_name String
+  address String
+  address_info String?
+  city String
+  phone String
+  postal_code String
+
+  // Relations
+  country   Country @relation(fields: [country_id], references: [id])
+  country_id String
+
+  order   Order @relation(fields: [order_id], references: [id])
+  order_id String @unique
+
+  // metadata
+  @@map("order_addresses")
 }

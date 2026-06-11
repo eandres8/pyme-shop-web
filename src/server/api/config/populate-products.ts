@@ -14,16 +14,12 @@ export class PopulateProducts {
   async populate() {
     await seedRepository.resetTables();
 
-    const results = await Promise.all([
+    await Promise.all([
       userRepository.create(User.fromJson(initialUsersData.at(0)!)),
       userRepository.create(User.fromJson(initialUsersData.at(1)!)),
     ])
 
-    this.logger.log(results);
-
-    const resultCountries = await countryRepository.createMultiple(seedCountries);
-
-    this.logger.log(resultCountries);
+    await countryRepository.createMultiple(seedCountries);
 
     const resultCategory = await categoryRepository.createCategories([
       "Pants",
