@@ -4,11 +4,9 @@ import { auth } from "@/src/auth.config";
 import type {
   TFormUserAddress,
   TNewProductToOrder,
-  TOrderEntity,
   TProductToOrder,
 } from "@/src/core/types";
 import { orderRepository, productRepository } from "../../providers";
-import { Product } from "@/src/core/entities";
 import { Result } from "@/src/core/utils";
 
 export async function placeOrder(
@@ -29,14 +27,14 @@ export async function placeOrder(
 
   const productsMapResult = await _mapProducts(productIdList);
 
-  if (!productsMapResult.isOk) {
+  if (productsMapResult.isOk === false) {
     return {
       success: false,
-      message: productsMapResult.getError<Error>().message,
+      message: productsMapResult.error.message,
     };
   }
 
-  const productsMap = productsMapResult.data<Record<string, number>>();
+  const productsMap = productsMapResult.data;
 
   const itemsInOrder = products.reduce((count, p) => count + p.quantity, 0);
 
@@ -89,18 +87,17 @@ export async function placeOrder(
   console.log('result', result);
   
   if (!result.isOk) {
-    console.log('result::err', result.getError<Error>().message);
+    console.log('result::err', result.error.message);
     return {
       success: false,
-      message: result.getError<Error>().message,
+      message: result.error.message,
     };
   }
 
   return {
     success: true,
     message: "Orden generada correctamente",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data: result.data<TOrderEntity>(),
+    data: result.data,
   };
 }
 
@@ -110,12 +107,11 @@ const _mapProducts = async (
   const productsResult = await productRepository.listProductsByIds(productIds);
 
   if (!productsResult.isOk) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return productsResult as any;
+    return productsResult;
   }
 
   const productsMap: Record<string, number> = productsResult
-    .data<Product[]>()
+    .data
     .reduce(
       (prev, curr) => ({
         ...prev,

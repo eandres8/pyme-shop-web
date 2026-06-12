@@ -1,6 +1,6 @@
 import { initialData, initialUsersData, seedCountries } from "@/prisma/seed";
 import { prismaDbClient } from "@/src/config/database/prisma-client";
-import { Category, Product } from "@/src/core/entities";
+import { Product } from "@/src/core/entities";
 import { User } from "@/src/core/entities/user.entity";
 import { Logger } from "@/src/core/utils";
 import { SeedRepository } from "@/src/server/repositories";
@@ -29,7 +29,7 @@ export class PopulateProducts {
     ]);
 
     if (!resultCategory.isOk) {
-      throw resultCategory.getError();
+      throw resultCategory.error;
     }
 
     const mapCategories = await this.getCategories();
@@ -56,21 +56,21 @@ export class PopulateProducts {
     );
 
     if (result.isOk === false) {
-      throw result.getError();
+      throw result.error;
     }
 
-    return result.data();
+    return result.data;
   }
 
   async getCategories() {
     const result = await categoryRepository.listCategories();
 
     if (!result.isOk) {
-      throw result.getError();
+      throw result.error;
     }
 
     const entries: Array<[name: string, id: string]> = result
-      .data<Category[]>()
+      .data
       .map((c) => [c.name.toLocaleLowerCase(), c.id]);
 
     return new Map(entries);

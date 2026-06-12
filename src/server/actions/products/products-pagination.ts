@@ -4,6 +4,7 @@ import { prismaDbClient } from "@/src/config/database/prisma-client";
 import { Product } from "@/src/core/entities";
 import { TPaginateData } from "@/src/core/types";
 import { ProductRepository } from "../../repositories";
+import type { Fail } from "@/src/core/utils";
 
 type Props = {
   page?: number;
@@ -35,14 +36,14 @@ export const getPaginatedProductsWithImages = async (props: Props) => {
   const [products, countProducts] = result;
 
   if (!products.isOk || !countProducts.isOk) {
-    const err = products.getError() || countProducts.getError();
+    const err = (products as Fail).error || (countProducts as Fail).error;
     console.error(err);
     
     throw err;
   }
 
   return {
-    ...countProducts.data(),
-    data: products.data<Product[]>(),
+    ...countProducts.data,
+    data: products.data,
   } as TPaginateData<Product[]>;
 } 

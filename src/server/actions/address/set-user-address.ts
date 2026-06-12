@@ -17,11 +17,11 @@ export async function setUserAddress(
 
   const findUserAddress = await userAddressRepository.findByUserId(userId);
 
-  if (!findUserAddress.isOk) {
-    throw findUserAddress.getError();
+  if (findUserAddress.isOk === false) {
+    throw findUserAddress.error;
   }
 
-  if (!findUserAddress.data<UserAddress>().id) {
+  if (!findUserAddress.data.id) {
     const result = await userAddressRepository.create(userAddress);
 
     return _responseData(result as Result<UserAddress>);
@@ -35,9 +35,9 @@ export async function setUserAddress(
 const _responseData = (address: Result<UserAddress>) => {
   return {
     success: address.isOk,
-    ...(address.isOk ? { data: address.data<UserAddress>().toJson() } : {}),
-    ...(!address.isOk
-      ? { message: (address.getError() as Error).message }
+    ...(address.isOk ? { data: address.data.toJson() } : {}),
+    ...(address.isOk === false
+      ? { message: address.error.message }
       : {}),
   };
 };
