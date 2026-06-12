@@ -5,5 +5,6 @@ export * from './country/get-countries';
 export * from './auth/login';
 export * from './auth/logout';
 export * from './auth/register';
+export * from './order/place-order';
 export * from './products/get-product-by-slug';
 export * from './products/products-pagination';

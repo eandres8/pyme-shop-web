@@ -10,7 +10,8 @@ export function to<T, U extends object = Error>(
   return promise
     .then<[T, null]>((data) => [data, null])
     .catch<[undefined, U]>((err) => {
-      const parsedError = { ...err, ...errorExt };
+      const error = err instanceof Error ? { message: err.message, name: err.name } : err;
+      const parsedError = { ...error, ...errorExt };
       return [undefined, parsedError];
     });
 }

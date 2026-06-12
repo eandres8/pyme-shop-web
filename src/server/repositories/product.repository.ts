@@ -133,4 +133,29 @@ export class ProductRepository {
 
     return Result.success(Product.fromEntity(data as unknown as TProductEntity));
   }
+
+  async listProductsByIds(productIdList: string[]) {
+    const [data, error] = await to(
+      this.client.product.findMany({
+        where: {
+          id: {
+            in: productIdList
+          },
+        },
+      }),
+    );
+
+    if (error) {
+      this.logger.log({ error });
+      return Result.failure(
+        new Error(error?.message || "Error consultando productos"),
+      );
+    }
+
+    return Result.success(
+      data.map((p) =>
+        Product.fromEntity(p as TProductEntity),
+      ),
+    );
+  }
 }

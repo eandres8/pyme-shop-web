@@ -17,6 +17,7 @@ type CartState = {
   addProductToCart: (product: TCartProduct) => void;
   updateProductQuantity: (product: TCartProduct, quantity: number) => void;
   removeProduct: (product: TCartProduct) => void;
+  clearCart: () => void;
 };
 
 export const useCartStore = create<CartState>()(
@@ -86,6 +87,11 @@ export const useCartStore = create<CartState>()(
           ),
         }));
       },
+      // END removeProduct
+      clearCart: () => {
+        set({ cart: [] });
+      }
+      // END clearCart
     }),
     {
       name: "pyme-shop",

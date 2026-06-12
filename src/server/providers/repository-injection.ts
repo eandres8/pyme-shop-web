@@ -4,6 +4,7 @@ import {
   ProductRepository,
   UserAddressRepository,
   UserRepository,
+  OrderRepository,
 } from "../repositories";
 import { prismaDbClient } from "@/src/config/database/prisma-client";
 
@@ -12,3 +13,4 @@ export const productRepository = new ProductRepository(prismaDbClient);
 export const categoryRepository = CategoryRepository(prismaDbClient);
 export const countryRepository = CountryRepository(prismaDbClient);
 export const userAddressRepository = UserAddressRepository(prismaDbClient);
+export const orderRepository = OrderRepository(prismaDbClient);
