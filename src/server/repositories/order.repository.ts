@@ -1,9 +1,58 @@
 import { PrismaClient } from "@/prisma/generated/prisma/client";
-import type { TNewOrder, TOrderEntity } from "@/src/core/types";
+import { Order } from "@/src/core/entities";
+import type { TFullOrder, TNewOrder, TOrderEntity } from "@/src/core/types";
 import { Logger, Result, to } from "@/src/core/utils";
 
 export function OrderRepository(client: PrismaClient) {
   const logger = Logger("OrderRepository");
+
+  const getById = async (id: string): Promise<Result<Order>> => {
+    const [data, error] = await to(client.order.findFirst({
+      where: { id },
+      include: {
+        orderItems: {
+          select: {
+            id: true,
+            order_id: true,
+            price: true,
+            product_id: true,
+            quantity: true,
+            size: true,
+            product: {
+              select: {
+                title: true,
+                slug: true,
+
+                productImages: {
+                  select: {
+                    url: true,
+                  },
+                  take: 1
+                }
+              }
+            }
+          }
+        },
+        orderAddresses: true,
+      }
+    }));
+
+    if (error) {
+      return Result.failure(
+        new Error(error?.message || `Error consultando la orden ${id}`),
+      );
+    }
+    
+    if (!data) {
+      return Result.failure(
+        new Error(`La orden ${id} no existe`),
+      );
+    }
+
+    console.log(data);
+    
+    return Result.success(Order.fromEntity(data as TFullOrder));
+  };
 
   const trxNewOrder = async (payload: TNewOrder) => {
     const [data, error] = await to(client.$transaction( async (tx) => {
@@ -87,5 +136,6 @@ export function OrderRepository(client: PrismaClient) {
 
   return {
     trxNewOrder,
+    getById,
   };
 }

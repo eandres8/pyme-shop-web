@@ -1,8 +1,9 @@
 import Link from "next/link";
 
 import { Title } from "@/src/shared/components/ui";
-import { ProductsInCart } from "./ui/products-in-cart/ProductsInCart";
 import { PlaceOrder } from "./ui/place-order/PlaceOrder";
+import { ProductsCartLoader } from "./ui/products-cart-loader/ProductsCartLoader";
+
 
 export default function CheckoutPage() {
   return (
@@ -18,7 +19,7 @@ export default function CheckoutPage() {
               Editar elementos del carrito
             </Link>
 
-            <ProductsInCart /> 
+            <ProductsCartLoader /> 
           </div>
 
           {/* Checkout */}

@@ -2,18 +2,14 @@
 
 import Image from "next/image";
 
-import { useCartStore } from "@/src/client/stores";
-import { useHydrateValidate } from "@/src/client/data/hooks";
 import { currencyFormat } from "@/src/shared/utils";
+import type { TCartProduct } from "@/src/core/types";
 
-export const ProductsInCart: React.FC = () => {
-  const products = useCartStore((state) => state.cart);
-  const isLoaded = useHydrateValidate();
+type Props = {
+  products: TCartProduct[];
+};
 
-  if (!isLoaded) {
-    return <p>Cargando...</p>;
-  }
-
+export const ProductsInCart: React.FC<Props> = ({ products }) => {
   return (
     <>
       {products.map((product) => (
