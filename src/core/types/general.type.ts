@@ -1,4 +1,3 @@
-
 export type TLayoutProps = { children: React.ReactNode };
 
 export type TPagination = {
@@ -9,3 +8,10 @@ export type TPagination = {
 export type TPaginateData<T> = {
   data: T;
 } & TPagination;
+
+export type TActionResponse<T> =
+  | {
+      success: true;
+      data: T;
+    }
+  | { success: false; message: string };

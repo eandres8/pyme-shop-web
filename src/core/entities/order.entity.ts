@@ -4,7 +4,7 @@ import type {
   TFullOrder,
   TFormUserAddress,
   TOrderDetail,
-  TCartProduct,
+  TOrderResume,
 } from "../types";
 
 export class Order {
@@ -21,7 +21,6 @@ export class Order {
     readonly orderAddresses: TOrderAddress,
   ) {}
 
-  // TODO: map order db entity
   static fromEntity(data: Partial<TFullOrder>) {
     return new Order(
       data?.id || "",
@@ -84,6 +83,17 @@ export class Order {
         country: this.orderAddresses.country_id,
         phone: this.orderAddresses.phone,
       } as TFormUserAddress,
+    };
+  }
+
+  toJson(): TOrderResume {
+    return {
+      id: this.id,
+      is_paid: this.isPaid,
+      total: this.total,
+      user_name: `${this.orderAddresses.first_name} ${this.orderAddresses.last_name}`,
+      items_in_cart: this.itemsInOrder,
+      subTotal: this.subtotal,
     };
   }
 }

@@ -134,8 +134,27 @@ export function OrderRepository(client: PrismaClient) {
     return Result.success(data.order as TOrderEntity);
   };
 
+  const listOrdersByUser = async (userId: string) => {
+    const [data, error] = await to(client.order.findMany({
+      where: { user_id: userId },
+      include: {
+        orderItems: true,
+        orderAddresses: true,
+      }
+    }));
+
+    if (error) {
+      return Result.failure(
+        new Error(error?.message || `Error consultando las ordenes`),
+      );
+    }
+    
+    return Result.success(data.map((o) => Order.fromEntity(o as TFullOrder)));
+  }
+
   return {
     trxNewOrder,
     getById,
+    listOrdersByUser,
   };
 }

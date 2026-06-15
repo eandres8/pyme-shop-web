@@ -90,3 +90,12 @@ export type TOrderDetail = {
   orderProducts: TCartProduct[];
   address: TFormUserAddress;
 };
+
+export type TOrderResume = {
+  id: string;
+  total: number;
+  subTotal: number;
+  items_in_cart: number;
+  is_paid: boolean;
+  user_name: string;
+};
