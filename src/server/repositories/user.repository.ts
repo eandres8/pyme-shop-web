@@ -66,9 +66,29 @@ export function UserRepository(client: PrismaClient) {
     return Result.success(data);
   };
 
+  const changeRole = async (userId: string, role: string) => {
+    const [data, error] = await to(
+      client.user.update({
+        where: { id: userId },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: { role: role as any }
+      }),
+    );
+
+    if (error) {
+      logger.log({ error });
+      return Result.failure(
+        new Error(error?.message || "Error actualizando el usuario"),
+      );
+    }
+
+    return Result.success(User.fromEntity(data as TUserEntity));
+  }
+
   return {
     create,
     findByEmail,
     findByTenant,
+    changeRole,
   };
 }
