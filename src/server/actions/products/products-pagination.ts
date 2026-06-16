@@ -2,7 +2,7 @@
 
 import { prismaDbClient } from "@/src/config/database/prisma-client";
 import { Product } from "@/src/core/entities";
-import { TPaginateData } from "@/src/core/types";
+import type { TPaginateData } from "@/src/core/types";
 import { ProductRepository } from "../../repositories";
 import type { Fail } from "@/src/core/utils";
 

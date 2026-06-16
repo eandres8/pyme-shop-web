@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prismaDbClient } from "@/src/config/database/prisma-client";
 import { Product } from "@/src/core/entities";
 import { ProductRepository } from "@/src/server/repositories";
+import type { Success } from "@/src/core/utils";
 
 const productRepository = new ProductRepository(prismaDbClient);
 
@@ -12,7 +13,7 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ slug: 
   try {
     const result = await productRepository.productBySlug(slug);
 
-    const inStock = result.data<Product>().inStock;
+    const inStock = (result as Success<Product>).data.inStock;
  
     return new NextResponse<{ inStock: number }>(JSON.stringify({ inStock }), {
       status: 200,

@@ -1,6 +1,5 @@
 'use server';
 
-import { UserAddress } from "@/src/core/entities";
 import { userAddressRepository } from "../../providers";
 
 export async function deleteUserAddress(userId: string) {
@@ -10,5 +9,5 @@ export async function deleteUserAddress(userId: string) {
     return null;
   }
 
-  return result.data<UserAddress>().toJson();
+  return result.data.toJson();
 }

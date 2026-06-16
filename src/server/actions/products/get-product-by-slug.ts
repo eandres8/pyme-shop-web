@@ -1,13 +1,17 @@
 'use server';
 
 import { prismaDbClient } from "@/src/config/database/prisma-client";
-import { Product } from "@/src/core/entities";
 import { ProductRepository } from "../../repositories";
+import { Product } from "@/src/core/entities";
 
 const productRepository = new ProductRepository(prismaDbClient);
 
-export const getProductBySlug = async (slug: string) => {
+export async function getProductBySlug(slug: string): Promise<Product> {
   const result = await productRepository.productBySlug(slug);
 
-  return result.data<Product>();
+  if (!result.isOk) {
+    return Product.fromJson({});
+  }
+
+  return result.data;
 }

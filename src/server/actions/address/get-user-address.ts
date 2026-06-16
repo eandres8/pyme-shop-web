@@ -1,6 +1,5 @@
 'use server';
 
-import { UserAddress } from "@/src/core/entities";
 import { userAddressRepository } from "../../providers";
 import type { TFormUserAddress } from "@/src/core/types";
 
@@ -15,7 +14,7 @@ export async function getUserAddress(userId: string): Promise<Partial<TFormUserA
     return {};
   }
 
-  const { country_id, ...rest } = result.data<UserAddress>().toJson();
+  const { country_id, ...rest } = result.data.toJson();
 
   return {
     ...rest,

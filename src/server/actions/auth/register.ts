@@ -26,6 +26,6 @@ export const registerUser = async (
 
   return {
     success: true,
-    data: result.data<User>().toPublic(),
+    data: result.data.toPublic(),
   };
 };
