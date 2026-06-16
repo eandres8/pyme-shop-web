@@ -40,7 +40,7 @@ export function UserRepository(client: PrismaClient) {
     if (error) {
       logger.log({ error });
       return Result.failure(
-        new Error(error?.message || "Error creando el usuario"),
+        new Error(error?.message || "Error filtrando el usuario"),
       );
     }
 
@@ -49,8 +49,26 @@ export function UserRepository(client: PrismaClient) {
     return Result.success(data);
   }
 
+  const findByTenant = async (tenant: string) => {
+    const [result, error] = await to(
+      client.user.findMany({}),
+    );
+
+    if (error) {
+      logger.log({ error });
+      return Result.failure(
+        new Error(error?.message || "Error consultando los usuarios"),
+      );
+    }
+
+    const data = result.map((u) => User.fromEntity(u as TUserEntity));
+
+    return Result.success(data);
+  };
+
   return {
     create,
     findByEmail,
-  }
+    findByTenant,
+  };
 }

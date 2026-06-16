@@ -11,3 +11,4 @@ export * from './order/get-paginated-orders';
 export * from './order/place-order';
 export * from './products/get-product-by-slug';
 export * from './products/products-pagination';
+export * from './users/get-user-filtered';
