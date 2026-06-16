@@ -3,9 +3,9 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { IoAlertCircleOutline } from "react-icons/io5";
+import clsx from "clsx";
 
 import { authenticate } from "@/src/server/actions";
-import clsx from "clsx";
 
 export const LoginForm: React.FC = () => {
   const [errorMessage, formAction, isPending] = useActionState(
@@ -35,7 +35,6 @@ export const LoginForm: React.FC = () => {
           "cursor-pointer btn-primary": !isPending,
           "btn-disabled": isPending,
         })}
-        aria-disabled={isPending}
         disabled={isPending}
       >
         Ingresar
