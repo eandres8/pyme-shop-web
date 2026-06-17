@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 
-import { QuantitySelector } from "@/src/shared/components/product";
+import { ProductImage, QuantitySelector } from "@/src/shared/components/product";
 import { useCartStore } from "@/src/client/stores";
 import { useHydrateValidate } from "@/src/client/data/hooks";
 
@@ -23,7 +22,7 @@ export const ProductCartList: React.FC = () => {
     <>
       {products.map((product) => (
         <div key={`${product.slug}.${product.size}`} className="flex">
-          <Image
+          <ProductImage
             src={`/images/products/${product.image}`}
             alt={product.title}
             width={100}

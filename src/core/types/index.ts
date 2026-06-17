@@ -1,4 +1,5 @@
 export * from './address.type';
+export * from './category.type';
 export * from './country.type';
 export * from './general.type';
 export * from './order.type';

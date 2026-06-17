@@ -1,10 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import { IoAddOutline } from "react-icons/io5";
 
 import { getPaginatedProductsWithImages } from "@/src/server/actions";
 import { Pagination, Title } from "@/src/shared/components";
 import { currencyFormat } from "@/src/shared/utils";
+import { ProductImage } from "@/src/shared/components/product";
 
 type Props = {
   searchParams: Promise<{ page?: string }>;
@@ -79,8 +79,8 @@ export default async function ProductsAdminPage({ searchParams }: Props) {
               >
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   <Link href={`/admin/product/${p.slug}`}>
-                    <Image
-                      src={`/images/products/${p.images.at(0)!}`}
+                    <ProductImage
+                      src={p.images?.at(0)}
                       width={80}
                       height={80}
                       alt={p.title}

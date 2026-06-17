@@ -1,8 +1,12 @@
 import { PrismaClient } from "@/prisma/generated/prisma/client";
 import { Product } from "@/src/core/entities";
 
-import type { TPagination } from "@/src/core/types";
-import type { TProductEntity } from "@/src/core/types/product.type";
+import type {
+  TPagination,
+  TProductEntity,
+  TProductUpdate,
+  TSize,
+} from "@/src/core/types";
 import { Result, Logger, to } from "@/src/core/utils";
 
 type TListProps = {
@@ -24,7 +28,7 @@ export class ProductRepository {
         include: {
           productImages: {
             take: 2,
-            select: { url: true },
+            select: { url: true, id: true, product_id: true },
           },
         },
         where: {
@@ -50,7 +54,7 @@ export class ProductRepository {
         } as any),
       ),
     );
-  };
+  }
 
   async countProducts({ page, take, category }: TListProps) {
     const [result, error] = await to(
@@ -118,9 +122,9 @@ export class ProductRepository {
         },
         include: {
           productImages: {
-            select: { url: true },
+            select: { url: true, id: true, product_id: true },
           },
-        }
+        },
       }),
     );
 
@@ -131,7 +135,9 @@ export class ProductRepository {
       );
     }
 
-    return Result.success(Product.fromEntity(data as unknown as TProductEntity));
+    return Result.success(
+      Product.fromEntity(data as unknown as TProductEntity),
+    );
   }
 
   async listProductsByIds(productIdList: string[]) {
@@ -139,7 +145,7 @@ export class ProductRepository {
       this.client.product.findMany({
         where: {
           id: {
-            in: productIdList
+            in: productIdList,
           },
         },
       }),
@@ -153,9 +159,64 @@ export class ProductRepository {
     }
 
     return Result.success(
-      data.map((p) =>
-        Product.fromEntity(p as TProductEntity),
-      ),
+      data.map((p) => Product.fromEntity(p as TProductEntity)),
     );
+  }
+
+  async updateProductInfo(product: TProductUpdate) {
+    const { id, tags, sizes, categoryId, inStock, ...rest } = product;
+    const tagsList = tags.split(",").map((tag) => tag.trim().toLowerCase());
+
+    const [data, error] = await to(
+      this.client.$transaction(async (tx) => {
+        let productData: Partial<TProductEntity>;
+
+        if (id) {
+          productData = (await this.client.product.update({
+            where: { id },
+            data: {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ...(rest as any),
+              in_stock: inStock,
+              category_id: categoryId,
+              sizes: {
+                set: sizes as TSize[],
+              },
+              tags: {
+                set: tagsList,
+              },
+            },
+          })) as TProductEntity;
+
+          this.logger.log({ updatedProduct: productData });
+        } else {
+          productData = (await this.client.product.create({
+            data: {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ...(rest as any),
+              in_stock: inStock,
+              category_id: categoryId,
+              sizes: {
+                set: sizes as TSize[],
+              },
+              tags: {
+                set: tagsList,
+              },
+            },
+          })) as TProductEntity;
+        }
+
+        return productData;
+      }),
+    );
+
+    if (error) {
+      this.logger.log({ error });
+      return Result.failure(
+        new Error(error?.message || "Error consultando productos"),
+      );
+    }
+
+    return Result.success(Product.fromEntity(data));
   }
 }

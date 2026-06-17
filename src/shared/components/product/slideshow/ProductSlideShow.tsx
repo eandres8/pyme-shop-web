@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
@@ -12,6 +11,7 @@ import "swiper/css/navigation";
 import "swiper/css/thumbs";
 
 import "./slideshow.css";
+import { ProductImage } from "../product-image/ProductImage";
 
 type Props = {
   images: string[];
@@ -43,10 +43,10 @@ export const ProductSlideShow: React.FC<Props> = ({
       >
         {images.map((image) => (
           <SwiperSlide key={image}>
-            <Image
+            <ProductImage
               width={1024}
               height={800}
-              src={`/images/products/${image}`}
+              src={image}
               alt={title}
               className="rounded-lg object-fill"
             />
@@ -65,10 +65,10 @@ export const ProductSlideShow: React.FC<Props> = ({
       >
         {images.map((image) => (
           <SwiperSlide key={image}>
-            <Image
+            <ProductImage
               width={300}
               height={300}
-              src={`/images/products/${image}`}
+              src={image}
               alt={title}
               className="rounded-lg object-fill"
             />

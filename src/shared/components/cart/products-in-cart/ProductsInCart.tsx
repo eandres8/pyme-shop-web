@@ -1,9 +1,8 @@
 "use client";
 
-import Image from "next/image";
-
 import { currencyFormat } from "@/src/shared/utils";
 import type { TCartProduct } from "@/src/core/types";
+import { ProductImage } from "../../product";
 
 type Props = {
   products: TCartProduct[];
@@ -14,8 +13,8 @@ export const ProductsInCart: React.FC<Props> = ({ products }) => {
     <>
       {products.map((product) => (
         <div key={`${product.slug}.${product.size}`} className="flex">
-          <Image
-            src={`/images/products/${product.image}`}
+          <ProductImage
+            src={product.image}
             alt={product.title}
             width={100}
             height={100}
