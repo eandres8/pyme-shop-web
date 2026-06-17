@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { titleFont } from "@/src/config/fonts";
+import { getProductStockBySlug } from "@/src/server/actions";
 
 type Props = {
   slug: string;
@@ -13,13 +14,9 @@ export const StockLabel: React.FC<Props> = ({ slug }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const getStock = async () => {
-    const response = await (await fetch(`/api/products/${slug}`))
-      .json()
-      .catch((e) => {
-        console.error(e);
-      });
+    const productStock = await getProductStockBySlug(slug);
 
-    setStock(response.inStock);
+    setStock(productStock);
     setIsLoading(false);
   };
 

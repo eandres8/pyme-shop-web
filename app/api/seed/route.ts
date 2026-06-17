@@ -3,7 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PopulateProducts } from '@/src/server/api/config/populate-products';
 
 export async function POST(_: NextRequest) {
-    // Parse the request body
+  if (process.env.NODE_ENV !== 'development') {
+    return new NextResponse(JSON.stringify({ message: 'Im a teapod' }), {
+      status: 418,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  // Parse the request body
   // const body = await request.json();
   // console.log({ body });
 
