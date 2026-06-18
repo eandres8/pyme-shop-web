@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import { productRepository } from '../../providers';
 import type { TActionResponse, TProductData, TProductUpdate } from '@/src/core/types';
+import { uploadFiles } from '../../repositories';
 
 const productSchema = z.object({
   id: z.uuid({ version: "v4" }).optional(),
@@ -22,8 +23,6 @@ const productSchema = z.object({
 export async function updateProductInfo(formData: FormData): Promise<TActionResponse<TProductData>> {
   const data = Object.fromEntries(formData);
   const productParsed = productSchema.safeParse(data);
-  
-  console.log({ productParsed });
 
   if (!productParsed.success) {
     return {
@@ -37,7 +36,9 @@ export async function updateProductInfo(formData: FormData): Promise<TActionResp
     slug: productParsed.data.slug.toLowerCase().replaceAll(/ /g, '_').trim(),
   } as TProductUpdate;
 
-  const result = await productRepository.updateProductInfo(product);
+  const images = formData.has('images') ? formData.getAll('images') as File[] : [];
+
+  const result = await productRepository.updateProductInfo(product, images);
 
   if (!result.isOk) {
     return {
@@ -48,6 +49,7 @@ export async function updateProductInfo(formData: FormData): Promise<TActionResp
 
   revalidatePath('/admin/products');
   revalidatePath(`/admin/product/${result.data.slug}`);
+  revalidatePath(`/products/${result.data.slug}`);
 
   return {
     success: true,

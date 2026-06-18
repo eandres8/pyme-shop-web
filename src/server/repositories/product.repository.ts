@@ -8,6 +8,7 @@ import type {
   TSize,
 } from "@/src/core/types";
 import { Result, Logger, to } from "@/src/core/utils";
+import { uploadFiles } from "./upload-files.repository";
 
 type TListProps = {
   page: number;
@@ -163,7 +164,7 @@ export class ProductRepository {
     );
   }
 
-  async updateProductInfo(product: TProductUpdate) {
+  async updateProductInfo(product: TProductUpdate, images: File[]) {
     const { id, tags, sizes, categoryId, inStock, ...rest } = product;
     const tagsList = tags.split(",").map((tag) => tag.trim().toLowerCase());
 
@@ -187,8 +188,6 @@ export class ProductRepository {
               },
             },
           })) as TProductEntity;
-
-          this.logger.log({ updatedProduct: productData });
         } else {
           productData = (await this.client.product.create({
             data: {
@@ -204,6 +203,21 @@ export class ProductRepository {
               },
             },
           })) as TProductEntity;
+        }
+
+        if (images.length > 0) {
+          const imagesUploaded = await uploadFiles(images);
+
+          if (!imagesUploaded || imagesUploaded.length < images.length) {
+            throw new Error("Error subiendo las imágenes");
+          }
+
+          await tx.productImage.createMany({
+            data: imagesUploaded.map((url) => ({
+              url,
+              product_id: productData!.id as string,
+            })),
+          });
         }
 
         return productData;

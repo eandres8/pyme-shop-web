@@ -26,12 +26,10 @@ type FormInputs = {
   tags: string;
   gender: 'men' | 'women' | 'kid';
   categoryId: string;
-  // TODO: images
+  images?: FileList;
 };
 
 export const ProductForm: React.FC<Props> = ({ product, categories }) => {
-  console.log({ product });
-
   const router = useRouter();
 
   const { handleSubmit, register, formState: { isValid }, getValues, setValue, watch } = useForm<FormInputs>({
@@ -46,6 +44,7 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       gender: product.gender as any,
       categoryId: product.category_id,
+      images: undefined,
     },
   });
 
@@ -66,7 +65,7 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
   const onSubmit = async (data: FormInputs) => {
     const formData = new FormData();
 
-    const { ...productInfo } = data;
+    const { images, ...productInfo } = data;
 
     if (product.id) {
       formData.append('id', product.id);
@@ -81,6 +80,12 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
     formData.append('tags', productInfo.tags);
     formData.append('categoryId', productInfo.categoryId);
     formData.append('gender', productInfo.gender);
+
+    if (images) {
+      for (const image of images) {
+        formData.append('images', image);
+      }
+    }
 
     const result = await updateProductInfo(formData);
 
@@ -188,7 +193,9 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
               type="file"
               multiple
               className="p-2 border rounded-md bg-gray-50"
+              placeholder="Selecciona tus imagenes"
               accept="image/png, image/jpeg, image/avif"
+              { ...register('images') }
             />
           </div>
 
