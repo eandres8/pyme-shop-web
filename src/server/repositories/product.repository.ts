@@ -8,7 +8,7 @@ import type {
   TSize,
 } from "@/src/core/types";
 import { Result, Logger, to } from "@/src/core/utils";
-import { uploadFiles } from "./upload-files.repository";
+import { UploadFiles } from "./upload-files.repository";
 
 type TListProps = {
   page: number;
@@ -206,7 +206,7 @@ export class ProductRepository {
         }
 
         if (images.length > 0) {
-          const imagesUploaded = await uploadFiles(images);
+          const imagesUploaded = await UploadFiles().uploadImages(images);
 
           if (!imagesUploaded || imagesUploaded.length < images.length) {
             throw new Error("Error subiendo las imágenes");

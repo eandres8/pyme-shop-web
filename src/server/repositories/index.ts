@@ -1,6 +1,7 @@
 export * from './category.repository';
 export * from './country.repository';
 export * from './order.repository';
+export * from './product-image.repository';
 export * from './product.repository';
 export * from './seed.repository';
 export * from './upload-files.repository';

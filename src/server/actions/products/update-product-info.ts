@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { productRepository } from '../../providers';
 import type { TActionResponse, TProductData, TProductUpdate } from '@/src/core/types';
-import { uploadFiles } from '../../repositories';
+import { UploadFiles } from '../../repositories';
 
 const productSchema = z.object({
   id: z.uuid({ version: "v4" }).optional(),

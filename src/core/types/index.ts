@@ -3,5 +3,6 @@ export * from './category.type';
 export * from './country.type';
 export * from './general.type';
 export * from './order.type';
+export * from './product-image.type';
 export * from './product.type';
 export * from './user.type';

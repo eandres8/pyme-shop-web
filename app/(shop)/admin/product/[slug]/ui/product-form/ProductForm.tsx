@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { ToastContainer, toast } from 'react-toastify';
 
 import type { TCategory, TProductData } from "@/src/core/types";
-import { updateProductInfo } from "@/src/server/actions";
+import { deleteProductImage, updateProductInfo } from "@/src/server/actions";
 import { ProductImage } from "@/src/shared/components/product";
 
 type Props = {
@@ -60,6 +60,10 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
     }
 
     setValue('sizes', Array.from(sizes));
+  }
+
+  const deleteImage = (imageId: string, imageUrl: string) => async () => {
+    const result = await deleteProductImage(imageId, imageUrl);
   }
 
   const onSubmit = async (data: FormInputs) => {
@@ -213,7 +217,7 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
                   <button
                     type="button"
                     className="bg-red-600 hover:bg-red-800 text-white w-full py-2 px-4 rounded-b-xl transition-all cursor-pointer"
-                    onClick={() => console.log(pi.id, pi.url)}
+                    onClick={deleteImage(pi.id, pi.url)}
                   >
                     Eliminar
                   </button>
