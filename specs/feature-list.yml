@@ -20,5 +20,22 @@ features:
       - Install jest and others necessary dependencies with pnpm
       - Config jest for project
       - create tests for src/shared/utils/* files
+    status: DONE
+    sdd: true
+  - id: 2
+    name: DL_2_testing_actions
+    title: add tests for server actions
+    description: Server actions are a new feature in Next.js 13 that allow you to run server-side code directly from your components, it are very useful for handling form submissions, fetching data, and performing other server-side tasks without needing to set up a separate API route. The goal of this task is to create tests for the server actions in the project to ensure they work correctly and handle edge cases.
+    acceptance:
+      - create mocks in folder /tests/mocks/repositories
     status: PENDING
     sdd: true
+  - id: 3
+    name: DL_3_add_multitenancy_support
+    title: Add multitenancy support to backend
+    description: Implement multitenancy support in the prisma entities to allow multiple sellers to manage their products and orders independently.
+    acceptance:
+      - Create tenant model in database
+      - Create middleware to identify tenant from request, based on subdomain or request header
+      - Ensure the workflow runs on push and pull request events
+    status: PENDING

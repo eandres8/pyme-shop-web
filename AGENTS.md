@@ -67,3 +67,7 @@ PENDING → [spec_author] → SPEC_READY → ⏸ HUMAN → IN_PROGRESS → [impl
 - `.opencode/agents/implementer.md` — writes code + tests per approved spec
 - `.opencode/agents/reviewer.md` — approves/rejects via CHECKPOINTS.md
 - Skill loaded: `next-best-practices` (from `.agents/skills/`)
+
+## Important
+
+Durante la ejecución SIEMPRE debes indicar los agentes y skills que han sido utilizados y cuales se usaran en la implementación de cada tarea o plan.
