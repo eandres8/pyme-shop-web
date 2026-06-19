@@ -1,0 +1,24 @@
+project: pyme-shop
+description: This is a web store project for small and medium enterprises (PYME) to sell their products online. The project includes a Next.js frontend and a NestJS backend, with a focus on providing a seamless shopping experience for customers and an easy-to-use interface for sellers.
+rules:
+  one_feature_at_a_time: true
+  require_tests_to_close: true
+  require_approved_spec_to_implement: true
+  valid_status:
+    - PENDING
+    - SPEC_READY
+    - IN_PROGRESS
+    - DONE
+    - BLOCKED
+  sdd_required_when: 'feature has "sdd": true'
+features:
+  - id: 1
+    name: DL_1_jest_config
+    title: add jest as testing library
+    description: Config jest and dependencies necessary for React/NextJS components tests
+    acceptance:
+      - Install jest and others necessary dependencies with pnpm
+      - Config jest for project
+      - create tests for src/shared/utils/* files
+    status: PENDING
+    sdd: true
