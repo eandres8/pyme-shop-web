@@ -4,8 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import type { TActionResponse, TProductData, TProductUpdate } from '@/src/core/types';
-import type { IProductRepository } from '../../interfaces';
-import { inject } from '../../providers';
+import { productRepository } from '../../providers';
 
 const productSchema = z.object({
   id: z.uuid({ version: "v4" }).optional(),
@@ -20,43 +19,39 @@ const productSchema = z.object({
   gender: z.string(),
 });
 
-function updateProductInfoAction(productRepository: IProductRepository) {
-  return async (formData: FormData): Promise<TActionResponse<TProductData>> => {
-    const data = Object.fromEntries(formData);
-    const productParsed = productSchema.safeParse(data);
+export async function updateProductInfo(formData: FormData): Promise<TActionResponse<TProductData>> {
+  const data = Object.fromEntries(formData);
+  const productParsed = productSchema.safeParse(data);
 
-    if (!productParsed.success) {
-      return {
-        success: false,
-        message: productParsed.error?.message,
-      };
-    }
-
-    const product = {
-      ...productParsed.data,
-      slug: productParsed.data.slug.toLowerCase().replaceAll(/ /g, '_').trim(),
-    } as TProductUpdate;
-
-    const images = formData.has('images') ? formData.getAll('images') as File[] : [];
-
-    const result = await productRepository.updateProductInfo(product, images);
-
-    if (!result.isOk) {
-      return {
-        success: false,
-        message: result.error.message,
-      };
-    }
-
-    revalidatePath('/admin/products');
-    revalidatePath(`/admin/product/${result.data.slug}`);
-    revalidatePath(`/products/${result.data.slug}`);
-
+  if (!productParsed.success) {
     return {
-      success: true,
-      data: result.data.toPlain() as TProductData,
-    }
+      success: false,
+      message: productParsed.error?.message,
+    };
+  }
+
+  const product = {
+    ...productParsed.data,
+    slug: productParsed.data.slug.toLowerCase().replaceAll(/ /g, '_').trim(),
+  } as TProductUpdate;
+
+  const images = formData.has('images') ? formData.getAll('images') as File[] : [];
+
+  const result = await productRepository.updateProductInfo(product, images);
+
+  if (!result.isOk) {
+    return {
+      success: false,
+      message: result.error.message,
+    };
+  }
+
+  revalidatePath('/admin/products');
+  revalidatePath(`/admin/product/${result.data.slug}`);
+  revalidatePath(`/products/${result.data.slug}`);
+
+  return {
+    success: true,
+    data: result.data.toPlain() as TProductData,
   }
 }
-
-export const updateProductInfo = updateProductInfoAction(inject("productRepository") as IProductRepository);

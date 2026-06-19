@@ -28,10 +28,28 @@ features:
     description: Server actions are a new feature in Next.js 13 that allow you to run server-side code directly from your components, it are very useful for handling form submissions, fetching data, and performing other server-side tasks without needing to set up a separate API route. The goal of this task is to create tests for the server actions in the project to ensure they work correctly and handle edge cases.
     acceptance:
       - create mocks in folder /tests/mocks/repositories
-    status: PENDING
+      - create tests for server actions in folder /src/server/actions/*
+      - Ensure make dependency injection for repositories in server actions to allow mocking them in tests
+      - Ensure the workflow runs on push and pull request events
+      - Follow the TDD approach to implement the tests and the necessary changes in the server actions to make them testable
+      - Create tests for edge cases and error handling in server actions
+    status: DONE
     sdd: true
   - id: 3
-    name: DL_3_add_multitenancy_support
+    name: DL_3_testing_repositories
+    title: add tests for repositories
+    description: Repositories are responsible for handling data access and manipulation in the application, they interact with the database and provide an abstraction layer for the rest of the application. The goal of this task is to create tests for the repositories in the project to ensure they work correctly and handle edge cases.
+    acceptance:
+      - create tests for repositories in folder /src/server/repositories/*
+      - Create mocks in folder /tests/mocks/prisma to mock the prisma client in the repository tests
+      - Ensure make dependency injection for repositories in server actions to allow mocking them in tests
+      - Ensure the workflow runs on push and pull request events
+      - Follow the TDD approach to implement the tests and the necessary changes in the server actions to make them testable
+      - Create tests for edge cases and error handling in server actions
+    status: DONE
+    sdd: true
+  - id: 4
+    name: DL_4_add_multitenancy_support
     title: Add multitenancy support to backend
     description: Implement multitenancy support in the prisma entities to allow multiple sellers to manage their products and orders independently.
     acceptance:

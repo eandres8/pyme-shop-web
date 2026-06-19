@@ -1,19 +1,14 @@
 'use server';
 
 import { Product } from "@/src/core/entities";
-import type { IProductRepository } from "../../interfaces";
-import { inject } from "../../providers";
+import { productRepository } from "../../providers";
 
-function getProductBySlugAction(productRepository: IProductRepository) {
-  return async (slug: string): Promise<Product> => {
-    const result = await productRepository.productBySlug(slug);
+export async function getProductBySlug(slug: string): Promise<Product> {
+  const result = await productRepository.productBySlug(slug);
 
-    if (!result.isOk) {
-      return Product.fromJson({});
-    }
+  if (!result.isOk) {
+    return Product.fromJson({});
+  }
 
-    return result.data;
-  };
+  return result.data;
 }
-
-export const getProductBySlug = getProductBySlugAction(inject("productRepository") as IProductRepository);

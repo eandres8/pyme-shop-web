@@ -2,40 +2,35 @@
 
 import type { TActionResponse, TOrderDetail } from "@/src/core/types";
 import { auth } from "@/src/auth.config";
-import { inject } from "../../providers";
-import type { IOrderRepository } from "../../interfaces";
+import { orderRepository } from "../../providers";
 
-function getOrderByIdAction(orderRepository: IOrderRepository) {
-  return async (id: string): Promise<TActionResponse<TOrderDetail>> => {
-    const session = await auth();
+export async function getOrderById(id: string): Promise<TActionResponse<TOrderDetail>> {
+  const session = await auth();
 
-    if (!session?.user) {
-      return {
-        success: false,
-        message: "Usuario no autenticado",
-      };
-    }
-
-    const result = await orderRepository.getById(id);
-
-    if (!result.isOk) {
-      return {
-        success: false,
-        message: result.error.message,
-      };
-    }
-
-    const data = result.data;
-
-    if (session.user.role === 'user' && session.user.id !== data.userId) {
-      throw new Error('No hay permisos para esta consulta');
-    }
-
+  if (!session?.user) {
     return {
-      success: true,
-      data: data.toFormData(),
+      success: false,
+      message: "Usuario no autenticado",
     };
+  }
+
+  const result = await orderRepository.getById(id);
+
+  if (!result.isOk) {
+    return {
+      success: false,
+      message: result.error.message,
+    };
+  }
+
+  const data = result.data;
+
+  if (session.user.role === 'user' && session.user.id !== data.userId) {
+    throw new Error('No hay permisos para esta consulta');
+  }
+
+  return {
+    success: true,
+    data: data.toFormData(),
   };
 }
-
-export const getOrderById = getOrderByIdAction(inject("orderRepository") as IOrderRepository);

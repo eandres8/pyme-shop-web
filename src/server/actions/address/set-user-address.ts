@@ -3,14 +3,12 @@
 import type { TFormUserAddress } from "@/src/core/types";
 import { UserAddress } from "@/src/core/entities";
 import type { Result } from "@/src/core/utils";
-import type { IUserAddressRepository } from "../../interfaces";
-import { inject } from "../../providers";
+import { userAddressRepository } from "../../providers";
 
-function setUserAddressAction(userAddressRepository: IUserAddressRepository) {
-  return async (
+export async function setUserAddress(
     address: TFormUserAddress,
     userId: string,
-  ) => {
+  ) {
     const userAddress = UserAddress.fromJson({
       ...address,
       countryId: address.country,
@@ -32,7 +30,6 @@ function setUserAddressAction(userAddressRepository: IUserAddressRepository) {
     const updateResult = await userAddressRepository.update(userAddress);
 
     return _responseData(updateResult as Result<UserAddress>);
-  }
 }
 
 const _responseData = (address: Result<UserAddress>) => {
@@ -44,5 +41,3 @@ const _responseData = (address: Result<UserAddress>) => {
       : {}),
   };
 };
-
-export const setUserAddress = setUserAddressAction(inject('userAddressRepository') as IUserAddressRepository);

@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "jest",
+    "test": "jest --ci --coverage",
     "test:ci": "jest --ci --coverage",
     "run:seed": "ts-node ./src/data/seed/seed-database.ts"
   },
