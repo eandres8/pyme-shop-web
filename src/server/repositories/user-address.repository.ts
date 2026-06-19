@@ -2,8 +2,9 @@ import { PrismaClient } from "@/prisma/generated/prisma/client";
 import { UserAddress } from "@/src/core/entities";
 import type { TUserAddressEntity } from "@/src/core/types";
 import { Logger, Result, to } from "@/src/core/utils";
+import type { IUserAddressRepository } from "../interfaces";
 
-export function UserAddressRepository(client: PrismaClient) {
+export function UserAddressRepository(client: PrismaClient): IUserAddressRepository {
   const logger = Logger("UserAddressRepository");
   const userAddress = client.userAddress;
 

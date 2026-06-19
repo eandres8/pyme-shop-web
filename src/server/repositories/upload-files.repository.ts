@@ -1,6 +1,7 @@
 import { envs } from "@/src/config/envs";
-import { Result, to } from "@/src/core/utils";
+import { Logger, Result, to } from "@/src/core/utils";
 import { v2 as cloudinary } from "cloudinary";
+import type { IUploadFilesRepository } from "../interfaces";
 
 // Configuration
 cloudinary.config({
@@ -9,8 +10,10 @@ cloudinary.config({
   api_secret: envs.CLOUDINARY_API_SECRET,
 });
 
-export function UploadFiles() {
-  const uploadImages = async (files: File[], tenant?: string): Promise<string[]> => {
+export function UploadFilesRepository(): IUploadFilesRepository {
+  const logger = Logger("UploadFilesRepository");
+  
+  const uploadImages = async (files: File[], tenant?: string): Promise<Result<string[]>> => {
     const uploadResults = await Promise.all(files.map(async (image) => {
       const buffer = await image.arrayBuffer();
       const base64Image = Buffer.from(buffer).toString('base64');
@@ -20,12 +23,12 @@ export function UploadFiles() {
       })
       .then((result) => result.secure_url)
       .catch((error) => {
-        console.log(error);
+        logger.log(error);
         return null;
       });
     }));
   
-    return uploadResults.filter((v): v is string => !!v);
+    return Result.success(uploadResults.filter((v): v is string => !!v));
   }
 
   const deleteImage = async (imageUrl: string) => {
@@ -35,7 +38,7 @@ export function UploadFiles() {
       return Result.failure(new Error(error.message || "Failed to delete image"));
     }
 
-    return Result.success(data);
+    return Result.success(data as string);
   }
 
   return {

@@ -23,7 +23,7 @@ export const ProductCartList: React.FC = () => {
       {products.map((product) => (
         <div key={`${product.slug}.${product.size}`} className="flex">
           <ProductImage
-            src={`/images/products/${product.image}`}
+            src={product.image}
             alt={product.title}
             width={100}
             height={100}

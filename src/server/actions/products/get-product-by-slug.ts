@@ -1,17 +1,19 @@
 'use server';
 
-import { prismaDbClient } from "@/src/config/database/prisma-client";
-import { ProductRepository } from "../../repositories";
 import { Product } from "@/src/core/entities";
+import type { IProductRepository } from "../../interfaces";
+import { inject } from "../../providers";
 
-const productRepository = new ProductRepository(prismaDbClient);
+function getProductBySlugAction(productRepository: IProductRepository) {
+  return async (slug: string): Promise<Product> => {
+    const result = await productRepository.productBySlug(slug);
 
-export async function getProductBySlug(slug: string): Promise<Product> {
-  const result = await productRepository.productBySlug(slug);
+    if (!result.isOk) {
+      return Product.fromJson({});
+    }
 
-  if (!result.isOk) {
-    return Product.fromJson({});
-  }
-
-  return result.data;
+    return result.data;
+  };
 }
+
+export const getProductBySlug = getProductBySlugAction(inject("productRepository") as IProductRepository);

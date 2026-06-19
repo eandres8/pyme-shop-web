@@ -1,14 +1,19 @@
 'use server';
 
+import { inject } from "../../providers";
 import type { TCategory } from "@/src/core/types";
-import { categoryRepository } from "../../providers";
+import type { ICategoryRepository } from "../../interfaces";
 
-export async function getCategoryList(): Promise<TCategory[]> {
-  const result = await categoryRepository.listCategories();
+function getCategoryListAction(categoryRepository: ICategoryRepository) {
+  return async (): Promise<TCategory[]> => {
+    const result = await categoryRepository.listCategories();
 
-  if (!result.isOk) {
-    return [];
-  }
+    if (!result.isOk) {
+      return [];
+    }
 
-  return result.data.map(({ id, name }) => ({ id, name }));
+    return result.data.map(({ id, name }) => ({ id, name }));
+  };
 }
+
+export const getCategoryList = getCategoryListAction(inject("categoryRepository") as ICategoryRepository);

@@ -1,14 +1,19 @@
 'use server';
 
 import type { TCountry } from "@/src/core/types";
-import { countryRepository } from "../../providers";
+import { inject } from "../../providers";
+import type { ICountryRepository } from "../../interfaces";
 
-export const getCountries = async (): Promise<TCountry[]> => {
-  const result = await countryRepository.list();
+function getCountriesAction(countryRepository: ICountryRepository) {
+  return async (): Promise<TCountry[]> => {
+    const result = await countryRepository.list();
 
-  if (!result.isOk) {
-    return [];
-  }
+    if (!result.isOk) {
+      return [];
+    }
 
-  return result.data();
-}
+    return result.data;
+  };
+} 
+
+export const getCountries = getCountriesAction(inject('countryRepository') as ICountryRepository);

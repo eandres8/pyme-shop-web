@@ -4,20 +4,31 @@ import { Product } from "@/src/core/entities";
 import { User } from "@/src/core/entities/user.entity";
 import { Logger } from "@/src/core/utils";
 import { SeedRepository } from "@/src/server/repositories";
-import { userRepository, categoryRepository, productRepository, countryRepository } from "../../providers";
+import type {
+  IUserRepository,
+  ICountryRepository,
+  ICategoryRepository,
+  IProductRepository,
+} from "../../interfaces";
+import { inject } from "../../providers";
 
 const seedRepository = SeedRepository(prismaDbClient);
 
-export class PopulateProducts {
-  readonly logger = Logger("PopulateProducts");
+function PopulateProductsAction(
+  userRepository: IUserRepository,
+  countryRepository: ICountryRepository,
+  categoryRepository: ICategoryRepository,
+  productRepository: IProductRepository,
+) {
+  const logger = Logger("PopulateProducts");
 
-  async populate() {
+  const populate = async () => {
     await seedRepository.resetTables();
 
     await Promise.all([
       userRepository.create(User.fromJson(initialUsersData.at(0)!)),
       userRepository.create(User.fromJson(initialUsersData.at(1)!)),
-    ])
+    ]);
 
     await countryRepository.createMultiple(seedCountries);
 
@@ -29,10 +40,11 @@ export class PopulateProducts {
     ]);
 
     if (!resultCategory.isOk) {
+      logger.error(resultCategory.error);
       throw resultCategory.error;
     }
 
-    const mapCategories = await this.getCategories();
+    const mapCategories = await getCategories();
 
     const listProducts = initialData.products.map((p) =>
       Product.fromJson({
@@ -50,29 +62,44 @@ export class PopulateProducts {
         type: p.type,
       }),
     );
-    
+
     const result = await productRepository.createMultiple(
       listProducts.slice(0, 25),
     );
 
     if (result.isOk === false) {
+      logger.error(result.error);
       throw result.error;
     }
 
     return result.data;
-  }
+  };
 
-  async getCategories() {
+  const getCategories = async () => {
     const result = await categoryRepository.listCategories();
 
     if (!result.isOk) {
+      logger.error(result.error);
       throw result.error;
     }
 
-    const entries: Array<[name: string, id: string]> = result
-      .data
-      .map((c) => [c.name.toLocaleLowerCase(), c.id]);
+    const entries: Array<[name: string, id: string]> = result.data.map((c) => [
+      c.name.toLocaleLowerCase(),
+      c.id,
+    ]);
 
     return new Map(entries);
-  }
+  };
+
+  return {
+    populate,
+    getCategories,
+  };
 }
+
+export const populateProducts = PopulateProductsAction(
+  inject("userRepository") as IUserRepository,
+  inject("countryRepository") as ICountryRepository,
+  inject("categoryRepository") as ICategoryRepository,
+  inject("productRepository") as IProductRepository,
+);

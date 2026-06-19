@@ -8,22 +8,17 @@ import type {
   TSize,
 } from "@/src/core/types";
 import { Result, Logger, to } from "@/src/core/utils";
-import { UploadFiles } from "./upload-files.repository";
+import { UploadFilesRepository } from "./upload-files.repository";
+import type { IProductRepository, TListProps } from "../interfaces";
 
-type TListProps = {
-  page: number;
-  take: number;
-  category?: string;
-};
+const uploadFiles = UploadFilesRepository();
 
-export class ProductRepository {
-  private readonly logger = Logger("ProductRepository");
+export function ProductRepository(client: PrismaClient): IProductRepository {
+  const logger = Logger("ProductRepository");
 
-  constructor(private readonly client: PrismaClient) {}
-
-  async listProducts({ page, take, category }: TListProps) {
+  const listProducts = async ({ page, take, category }: TListProps) => {
     const [result, error] = await to(
-      this.client.product.findMany({
+      client.product.findMany({
         take,
         skip: (page - 1) * take,
         include: {
@@ -40,7 +35,7 @@ export class ProductRepository {
     );
 
     if (error) {
-      this.logger.log({ error });
+      logger.log({ error });
       return Result.failure(
         new Error(error?.message || "Error consultando productos"),
       );
@@ -57,9 +52,9 @@ export class ProductRepository {
     );
   }
 
-  async countProducts({ page, take, category }: TListProps) {
+  const countProducts = async ({ page, take, category }: TListProps) => {
     const [result, error] = await to(
-      this.client.product.count({
+      client.product.count({
         where: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           gender: category as any,
@@ -68,7 +63,7 @@ export class ProductRepository {
     );
 
     if (error) {
-      this.logger.log({ error });
+      logger.log({ error });
       return Result.failure(
         new Error(error?.message || "Error consultando cantidad de productos"),
       );
@@ -82,9 +77,9 @@ export class ProductRepository {
     return Result.success(resultData);
   }
 
-  async createMultiple(products: Product[]) {
+  const createMultiple = async (products: Product[]) => {
     const operations = products.map((p) => {
-      return this.client.product.create({
+      return client.product.create({
         data: {
           title: p.title,
           slug: p.slug,
@@ -103,21 +98,21 @@ export class ProductRepository {
       });
     });
 
-    const [data, error] = await to(this.client.$transaction(operations));
+    const [data, error] = await to(client.$transaction(operations));
 
     if (error) {
-      this.logger.log({ error });
+      logger.log({ error });
       return Result.failure(
         new Error(error?.message || "Error insertando datos"),
       );
     }
 
-    return Result.success(data);
+    return Result.success(data.map((p) => Product.fromEntity(p as unknown as TProductEntity)));
   }
 
-  async productBySlug(slug: string) {
+  const productBySlug = async (slug: string) => {
     const [data, error] = await to(
-      this.client.product.findFirst({
+      client.product.findFirst({
         where: {
           slug,
         },
@@ -130,7 +125,7 @@ export class ProductRepository {
     );
 
     if (error) {
-      this.logger.log({ error });
+      logger.log({ error });
       return Result.failure(
         new Error(error?.message || "Error insertando datos"),
       );
@@ -141,9 +136,9 @@ export class ProductRepository {
     );
   }
 
-  async listProductsByIds(productIdList: string[]) {
+  const listProductsByIds = async (productIdList: string[]) => {
     const [data, error] = await to(
-      this.client.product.findMany({
+      client.product.findMany({
         where: {
           id: {
             in: productIdList,
@@ -153,7 +148,7 @@ export class ProductRepository {
     );
 
     if (error) {
-      this.logger.log({ error });
+      logger.log({ error });
       return Result.failure(
         new Error(error?.message || "Error consultando productos"),
       );
@@ -164,16 +159,16 @@ export class ProductRepository {
     );
   }
 
-  async updateProductInfo(product: TProductUpdate, images: File[]) {
+  const updateProductInfo = async (product: TProductUpdate, images: File[]) => {
     const { id, tags, sizes, categoryId, inStock, ...rest } = product;
     const tagsList = tags.split(",").map((tag) => tag.trim().toLowerCase());
 
     const [data, error] = await to(
-      this.client.$transaction(async (tx) => {
+      client.$transaction(async (tx) => {
         let productData: Partial<TProductEntity>;
 
         if (id) {
-          productData = (await this.client.product.update({
+          productData = (await client.product.update({
             where: { id },
             data: {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -189,7 +184,7 @@ export class ProductRepository {
             },
           })) as TProductEntity;
         } else {
-          productData = (await this.client.product.create({
+          productData = (await client.product.create({
             data: {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               ...(rest as any),
@@ -206,14 +201,18 @@ export class ProductRepository {
         }
 
         if (images.length > 0) {
-          const imagesUploaded = await UploadFiles().uploadImages(images);
+          const imagesUploaded = await uploadFiles.uploadImages(images);
 
-          if (!imagesUploaded || imagesUploaded.length < images.length) {
+          if (!imagesUploaded.isOk) {
+            throw new Error(imagesUploaded.error.message || "Error subiendo las imágenes");
+          }
+
+          if (!imagesUploaded.data || imagesUploaded.data.length < images.length) {
             throw new Error("Error subiendo las imágenes");
           }
 
           await tx.productImage.createMany({
-            data: imagesUploaded.map((url) => ({
+            data: imagesUploaded.data.map((url) => ({
               url,
               product_id: productData!.id as string,
             })),
@@ -225,7 +224,7 @@ export class ProductRepository {
     );
 
     if (error) {
-      this.logger.log({ error });
+      logger.log({ error });
       return Result.failure(
         new Error(error?.message || "Error consultando productos"),
       );
@@ -233,4 +232,13 @@ export class ProductRepository {
 
     return Result.success(Product.fromEntity(data));
   }
+
+  return {
+    listProducts,
+    countProducts,
+    createMultiple,
+    productBySlug,
+    listProductsByIds,
+    updateProductInfo,
+  };
 }

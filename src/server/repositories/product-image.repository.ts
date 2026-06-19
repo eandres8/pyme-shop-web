@@ -1,8 +1,9 @@
 import { PrismaClient } from "@/prisma/generated/prisma/client";
 import { DeleteProductImage } from "@/src/core/entities";
 import { Logger, Result, to } from "@/src/core/utils";
+import type { IProductImageRepository } from "../interfaces";
 
-export function ProductImageRepository(client: PrismaClient) {
+export function ProductImageRepository(client: PrismaClient): IProductImageRepository {
   const logger = Logger("ProductImageRepository");
 
   const deleteImage = async (imageId: string) => {

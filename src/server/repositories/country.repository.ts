@@ -1,8 +1,9 @@
 import { PrismaClient } from "@/prisma/generated/prisma/client";
 import { Logger, Result, to } from "@/src/core/utils";
 import type { TCountry } from "@/src/core/types";
+import type { ICountryRepository } from "../interfaces";
 
-export function CountryRepository(client: PrismaClient) {
+export function CountryRepository(client: PrismaClient): ICountryRepository {
   const logger = Logger(CountryRepository.name);
 
   const createMultiple = async (countries: TCountry[]) => {

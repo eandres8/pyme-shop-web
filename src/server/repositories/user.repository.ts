@@ -2,8 +2,9 @@ import { PrismaClient } from "@/prisma/generated/prisma/client";
 import { User } from "@/src/core/entities";
 import type { TUserEntity } from "@/src/core/types";
 import { Logger, Result, to } from "@/src/core/utils";
+import type { IUserRepository } from "../interfaces";
 
-export function UserRepository(client: PrismaClient) {
+export function UserRepository(client: PrismaClient): IUserRepository {
   const logger = Logger(UserRepository.name);
 
   const create = async (user: User) => {

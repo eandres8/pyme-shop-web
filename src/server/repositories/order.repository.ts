@@ -2,8 +2,9 @@ import { PrismaClient } from "@/prisma/generated/prisma/client";
 import { Order } from "@/src/core/entities";
 import type { TFullOrder, TNewOrder, TOrderEntity } from "@/src/core/types";
 import { Logger, Result, to } from "@/src/core/utils";
+import type { IOrderRepository } from "../interfaces";
 
-export function OrderRepository(client: PrismaClient) {
+export function OrderRepository(client: PrismaClient): IOrderRepository {
   const logger = Logger("OrderRepository");
 
   // TODO: add tenantId filter
@@ -45,12 +46,11 @@ export function OrderRepository(client: PrismaClient) {
     }
     
     if (!data) {
+      logger.error(`La orden ${id} no existe`);
       return Result.failure(
         new Error(`La orden ${id} no existe`),
       );
     }
-
-    console.log(data);
     
     return Result.success(Order.fromEntity(data as TFullOrder));
   };
@@ -133,7 +133,7 @@ export function OrderRepository(client: PrismaClient) {
       );
     }
 
-    return Result.success(data.order as TOrderEntity);
+    return Result.success(Order.fromEntity(data.order as TOrderEntity));
   };
 
   // TODO: add tenantId filter

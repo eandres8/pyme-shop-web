@@ -3,8 +3,10 @@ import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import bcrypt from "bcryptjs";
 
-import { userRepository } from "./server/providers";
-import { User } from "./core/entities";
+import type { IUserRepository } from "./server/interfaces";
+import { inject } from "./server/providers";
+
+const userRepository = inject('userRepository') as IUserRepository;
 
 export const authConfig = {
   pages: {
