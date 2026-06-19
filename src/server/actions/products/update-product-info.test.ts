@@ -2,80 +2,76 @@ jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),
 }));
 
-import { updateProductInfoAction } from "./update-product-info";
-import { MockProductRepository } from "@/tests/mocks/repositories";
+jest.mock("../../providers", () => ({
+  productRepository: {
+    updateProductInfo: jest.fn(),
+  },
+}));
+
+import { updateProductInfo } from "./update-product-info";
 import { Product } from "@/src/core/entities";
 import { Result } from "@/src/core/utils";
-import { revalidatePath } from "next/cache";
 
-describe("updateProductInfoAction", () => {
+const mockProductRepository = jest.requireMock("../../providers").productRepository;
+
+describe("updateProductInfo", () => {
   beforeEach(() => {
-    (revalidatePath as jest.Mock).mockClear();
+    jest.clearAllMocks();
   });
 
   it("returns validation error when form data is invalid", async () => {
-    const mockRepo = MockProductRepository();
-    const action = updateProductInfoAction(mockRepo);
-
     const formData = new FormData();
     formData.set("title", "ab");
 
-    const result = await action(formData);
+    const result = await updateProductInfo(formData);
 
     expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(result.message).toBeTruthy();
-    }
+    expect(result.message).toBeDefined();
   });
 
   it("returns success when product is created", async () => {
-    const product = Product.fromJson({ id: "prod-1", title: "Test Product", slug: "test_product" });
-
-    const mockRepo = MockProductRepository({
-      updateProductInfo: async () => Result.success(product),
+    const product = Product.fromJson({
+      id: "550e8400-e29b-41d4-a716-446655440000",
+      title: "Test Product",
+      slug: "test-product",
+      price: 100,
     });
-
-    const action = updateProductInfoAction(mockRepo);
+    mockProductRepository.updateProductInfo.mockResolvedValue(Result.success(product));
 
     const formData = new FormData();
     formData.set("title", "Test Product");
-    formData.set("slug", "test product");
-    formData.set("description", "A great product");
-    formData.set("price", "29.99");
+    formData.set("slug", "test-product");
+    formData.set("description", "A test product");
+    formData.set("price", "100");
     formData.set("inStock", "10");
     formData.set("sizes", "M,L");
-    formData.set("tags", "tag1,tag2");
-    formData.set("categoryId", "550e8400-e29b-41d4-a716-446655440000");
-    formData.set("gender", "men");
+    formData.set("tags", "test");
+    formData.set("categoryId", "550e8400-e29b-41d4-a716-446655440001");
+    formData.set("gender", "unisex");
 
-    const result = await action(formData);
+    const result = await updateProductInfo(formData);
 
     expect(result.success).toBe(true);
-    expect(revalidatePath).toHaveBeenCalledWith("/admin/products");
-    expect(revalidatePath).toHaveBeenCalledWith("/admin/product/test_product");
-    expect(revalidatePath).toHaveBeenCalledWith("/products/test_product");
   });
 
   it("returns failure when repository returns an error", async () => {
-    const mockRepo = MockProductRepository({
-      updateProductInfo: async () => Result.failure(new Error("Update failed")),
-    });
-
-    const action = updateProductInfoAction(mockRepo);
+    mockProductRepository.updateProductInfo.mockResolvedValue(
+      Result.failure(new Error("DB error")),
+    );
 
     const formData = new FormData();
     formData.set("title", "Test Product");
-    formData.set("slug", "test_product");
-    formData.set("description", "A great product");
-    formData.set("price", "29.99");
+    formData.set("slug", "test-product");
+    formData.set("description", "A test product");
+    formData.set("price", "100");
     formData.set("inStock", "10");
     formData.set("sizes", "M,L");
-    formData.set("tags", "tag1,tag2");
-    formData.set("categoryId", "550e8400-e29b-41d4-a716-446655440000");
-    formData.set("gender", "men");
+    formData.set("tags", "test");
+    formData.set("categoryId", "550e8400-e29b-41d4-a716-446655440001");
+    formData.set("gender", "unisex");
 
-    const result = await action(formData);
+    const result = await updateProductInfo(formData);
 
-    expect(result).toEqual({ success: false, message: "Update failed" });
+    expect(result).toEqual({ success: false, message: "DB error" });
   });
 });

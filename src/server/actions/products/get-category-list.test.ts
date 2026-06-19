@@ -1,32 +1,37 @@
-import { getCategoryListAction } from "./get-category-list";
-import { MockCategoryRepository } from "@/tests/mocks/repositories";
+jest.mock("../../providers", () => ({
+  categoryRepository: {
+    listCategories: jest.fn(),
+  },
+}));
+
+import { getCategoryList } from "./get-category-list";
 import { Category } from "@/src/core/entities";
 import { Result } from "@/src/core/utils";
 
-describe("getCategoryListAction", () => {
-  it("returns mapped categories when repository succeeds", async () => {
-    const cat1 = Category.fromJson({ id: "cat-1", name: "Electronics" });
-    const cat2 = Category.fromJson({ id: "cat-2", name: "Clothing" });
-    const mockRepo = MockCategoryRepository({
-      listCategories: async () => Result.success([cat1, cat2]),
-    });
+const mockCategoryRepository = jest.requireMock("../../providers").categoryRepository;
 
-    const action = getCategoryListAction(mockRepo);
-    const result = await action();
+describe("getCategoryList", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns mapped categories when repository succeeds", async () => {
+    const cat1 = Category.fromJson({ id: "1", name: "Men" });
+    const cat2 = Category.fromJson({ id: "2", name: "Women" });
+    mockCategoryRepository.listCategories.mockResolvedValue(Result.success([cat1, cat2]));
+
+    const result = await getCategoryList();
 
     expect(result).toEqual([
-      { id: "cat-1", name: "Electronics" },
-      { id: "cat-2", name: "Clothing" },
+      { id: "1", name: "Men" },
+      { id: "2", name: "Women" },
     ]);
   });
 
   it("returns empty array when repository fails", async () => {
-    const mockRepo = MockCategoryRepository({
-      listCategories: async () => Result.failure(new Error("DB error")),
-    });
+    mockCategoryRepository.listCategories.mockResolvedValue(Result.failure(new Error("DB error")));
 
-    const action = getCategoryListAction(mockRepo);
-    const result = await action();
+    const result = await getCategoryList();
 
     expect(result).toEqual([]);
   });

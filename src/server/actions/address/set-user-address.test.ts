@@ -1,8 +1,17 @@
+jest.mock("../../providers", () => ({
+  userAddressRepository: {
+    findByUserId: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+  },
+}));
+
 import { setUserAddress } from "./set-user-address";
-import { MockUserAddressRepository } from "@/tests/mocks/repositories";
 import { UserAddress } from "@/src/core/entities";
 import { Result } from "@/src/core/utils";
 import type { TFormUserAddress } from "@/src/core/types";
+
+const mockUserAddressRepository = jest.requireMock("../../providers").userAddressRepository;
 
 const mockAddress: TFormUserAddress = {
   firstName: "John",
@@ -15,68 +24,70 @@ const mockAddress: TFormUserAddress = {
   phone: "555-0100",
 };
 
-describe("setUserAddressAction", () => {
+describe("setUserAddress", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("calls create when user has no existing address", async () => {
-    const createMock = jest.fn(async (address: UserAddress) => Result.success(address));
+    mockUserAddressRepository.findByUserId.mockResolvedValue(
+      Result.success(UserAddress.fromJson({ id: "" })),
+    );
+    mockUserAddressRepository.create.mockResolvedValue(
+      Result.success(UserAddress.fromJson({ id: "new-addr" })),
+    );
 
-    const mockRepo = MockUserAddressRepository({
-      findByUserId: async () => Result.success(UserAddress.fromJson({ id: "" })),
-      create: createMock,
-    });
+    const result = await setUserAddress(mockAddress, "user-1");
 
-    const action = setUserAddress(mockRepo);
-    const result = await action(mockAddress, "user-1");
-
-    expect(createMock).toHaveBeenCalledTimes(1);
+    expect(mockUserAddressRepository.create).toHaveBeenCalledTimes(1);
     expect(result.success).toBe(true);
   });
 
   it("calls update when user already has an address", async () => {
-    const updateMock = jest.fn(async (address: UserAddress) => Result.success(address));
+    mockUserAddressRepository.findByUserId.mockResolvedValue(
+      Result.success(UserAddress.fromJson({ id: "addr-1" })),
+    );
+    mockUserAddressRepository.update.mockResolvedValue(
+      Result.success(UserAddress.fromJson({ id: "addr-1" })),
+    );
 
-    const mockRepo = MockUserAddressRepository({
-      findByUserId: async () => Result.success(UserAddress.fromJson({ id: "addr-1" })),
-      update: updateMock,
-    });
+    const result = await setUserAddress(mockAddress, "user-1");
 
-    const action = setUserAddress(mockRepo);
-    const result = await action(mockAddress, "user-1");
-
-    expect(updateMock).toHaveBeenCalledTimes(1);
+    expect(mockUserAddressRepository.update).toHaveBeenCalledTimes(1);
     expect(result.success).toBe(true);
   });
 
   it("throws when findByUserId returns an error", async () => {
-    const mockRepo = MockUserAddressRepository({
-      findByUserId: async () => Result.failure(new Error("DB error")),
-    });
+    mockUserAddressRepository.findByUserId.mockResolvedValue(
+      Result.failure(new Error("DB error")),
+    );
 
-    const action = setUserAddress(mockRepo);
-
-    await expect(action(mockAddress, "user-1")).rejects.toThrow("DB error");
+    await expect(setUserAddress(mockAddress, "user-1")).rejects.toThrow("DB error");
   });
 
   it("returns failure when create returns an error", async () => {
-    const mockRepo = MockUserAddressRepository({
-      findByUserId: async () => Result.success(UserAddress.fromJson({ id: "" })),
-      create: async () => Result.failure(new Error("Create failed")),
-    });
+    mockUserAddressRepository.findByUserId.mockResolvedValue(
+      Result.success(UserAddress.fromJson({ id: "" })),
+    );
+    mockUserAddressRepository.create.mockResolvedValue(
+      Result.failure(new Error("Create failed")),
+    );
 
-    const action = setUserAddress(mockRepo);
-    const result = await action(mockAddress, "user-1");
+    const result = await setUserAddress(mockAddress, "user-1");
 
     expect(result.success).toBe(false);
     expect(result).toHaveProperty("message", "Create failed");
   });
 
   it("returns failure when update returns an error", async () => {
-    const mockRepo = MockUserAddressRepository({
-      findByUserId: async () => Result.success(UserAddress.fromJson({ id: "addr-1" })),
-      update: async () => Result.failure(new Error("Update failed")),
-    });
+    mockUserAddressRepository.findByUserId.mockResolvedValue(
+      Result.success(UserAddress.fromJson({ id: "addr-1" })),
+    );
+    mockUserAddressRepository.update.mockResolvedValue(
+      Result.failure(new Error("Update failed")),
+    );
 
-    const action = setUserAddress(mockRepo);
-    const result = await action(mockAddress, "user-1");
+    const result = await setUserAddress(mockAddress, "user-1");
 
     expect(result.success).toBe(false);
     expect(result).toHaveProperty("message", "Update failed");

@@ -49,7 +49,20 @@ features:
     status: DONE
     sdd: true
   - id: 4
-    name: DL_4_add_multitenancy_support
+    name: DL_4_fix_testing_actions
+    title: fix tests for server actions
+    description: Due to changes on inject repositories for server actions, all tests are failed
+    acceptance:
+      - fix mocks in folder /tests/mocks/repositories
+      - fix tests for server actions in folder /src/server/actions/*
+      - Ensure make dependency injection for repositories in server actions to allow mocking them in tests
+      - Ensure the workflow runs on push and pull request events
+      - Follow the TDD approach to implement the tests and the necessary changes in the server actions to make them testable
+      - Create tests for edge cases and error handling in server actions
+    status: DONE
+    sdd: true
+  - id: 5
+    name: DL_5_add_multitenancy_support
     title: Add multitenancy support to backend
     description: Implement multitenancy support in the prisma entities to allow multiple sellers to manage their products and orders independently.
     acceptance:

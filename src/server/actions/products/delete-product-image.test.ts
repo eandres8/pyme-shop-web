@@ -2,58 +2,54 @@ jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),
 }));
 
-import { deleteProductImageAction } from "./delete-product-image";
-import { MockProductImageRepository, MockUploadFilesRepository } from "@/tests/mocks/repositories";
-import { DeleteProductImage } from "@/src/core/entities";
-import { Result } from "@/src/core/utils";
-import { revalidatePath } from "next/cache";
+jest.mock("../../providers", () => ({
+  productImageRepository: {
+    deleteImage: jest.fn(),
+  },
+  uploadFilesRepository: {
+    deleteImage: jest.fn(),
+  },
+}));
 
-describe("deleteProductImageAction", () => {
+import { deleteProductImage } from "./delete-product-image";
+import { Result } from "@/src/core/utils";
+
+const mockProductImageRepository = jest.requireMock("../../providers").productImageRepository;
+const mockUploadFilesRepository = jest.requireMock("../../providers").uploadFilesRepository;
+
+describe("deleteProductImage", () => {
   beforeEach(() => {
-    (revalidatePath as jest.Mock).mockClear();
+    jest.clearAllMocks();
   });
 
   it("returns failure when image URL does not start with https://", async () => {
-    const mockImageRepo = MockProductImageRepository();
-    const mockUploadRepo = MockUploadFilesRepository();
-
-    const action = deleteProductImageAction(mockImageRepo, mockUploadRepo);
-    const result = await action("img-1", "http://example.com/image.jpg");
+    const result = await deleteProductImage("img-1", "http://example.com/image.jpg");
 
     expect(result).toEqual({ success: false, message: "Invalid image URL" });
+    expect(mockProductImageRepository.deleteImage).not.toHaveBeenCalled();
+    expect(mockUploadFilesRepository.deleteImage).not.toHaveBeenCalled();
   });
 
   it("deletes image and calls revalidatePath on success", async () => {
-    const deletedImage = DeleteProductImage.fromJson({
-      id: "img-1",
-      product: { slug: "test-product" },
-    });
-    const mockImageRepo = MockProductImageRepository({
-      deleteImage: async () => Result.success(deletedImage),
-    });
-    const mockUploadRepo = MockUploadFilesRepository({
-      deleteImage: async () => Result.success("ok"),
-    });
+    mockUploadFilesRepository.deleteImage.mockResolvedValue(Result.success("deleted"));
+    mockProductImageRepository.deleteImage.mockResolvedValue(
+      Result.success({ productSlug: "test-product" }),
+    );
 
-    const action = deleteProductImageAction(mockImageRepo, mockUploadRepo);
-    const result = await action("img-1", "https://res.cloudinary.com/test/image.jpg");
+    const result = await deleteProductImage("img-1", "https://res.cloudinary.com/test/image.jpg");
 
     expect(result).toEqual({ success: true, data: "Imagen eliminada correctamente" });
-    expect(revalidatePath).toHaveBeenCalledWith("/admin/products");
-    expect(revalidatePath).toHaveBeenCalledWith("/admin/product/test-product");
-    expect(revalidatePath).toHaveBeenCalledWith("/product/test-product");
+    expect(mockUploadFilesRepository.deleteImage).toHaveBeenCalled();
+    expect(mockProductImageRepository.deleteImage).toHaveBeenCalledWith("img-1");
   });
 
   it("returns failure when image deletion in repository fails", async () => {
-    const mockImageRepo = MockProductImageRepository({
-      deleteImage: async () => Result.failure(new Error("Delete failed")),
-    });
-    const mockUploadRepo = MockUploadFilesRepository({
-      deleteImage: async () => Result.success("ok"),
-    });
+    mockUploadFilesRepository.deleteImage.mockResolvedValue(Result.success("deleted"));
+    mockProductImageRepository.deleteImage.mockResolvedValue(
+      Result.failure(new Error("Delete failed")),
+    );
 
-    const action = deleteProductImageAction(mockImageRepo, mockUploadRepo);
-    const result = await action("img-1", "https://res.cloudinary.com/test/image.jpg");
+    const result = await deleteProductImage("img-1", "https://res.cloudinary.com/test/image.jpg");
 
     expect(result).toEqual({ success: false, message: "Delete failed" });
   });

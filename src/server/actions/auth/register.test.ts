@@ -1,17 +1,28 @@
-import { registerUserAction } from "./register";
-import { MockUserRepository } from "@/tests/mocks/repositories";
+jest.mock("../../providers", () => ({
+  userRepository: {
+    create: jest.fn(),
+    findByEmail: jest.fn(),
+  },
+}));
+
+import { registerUser } from "./register";
+import { User } from "@/src/core/entities";
 import { Result } from "@/src/core/utils";
 
-describe("registerUserAction", () => {
+const mockUserRepository = jest.requireMock("../../providers").userRepository;
+
+describe("registerUser", () => {
   const validUser = { name: "Test", email: "test@test.com", password: "123456" };
 
-  it("returns success with public user data when repository succeeds", async () => {
-    const mockRepo = MockUserRepository({
-      create: async (user) => Result.success(user),
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-    const action = registerUserAction(mockRepo);
-    const result = await action(validUser);
+  it("returns success with public user data when repository succeeds", async () => {
+    const user = User.fromJson({ ...validUser, id: "test-uuid" }).cipherPass();
+    mockUserRepository.create.mockResolvedValue(Result.success(user));
+
+    const result = await registerUser(validUser);
 
     expect(result.success).toBe(true);
     if (result.success) {
@@ -20,12 +31,9 @@ describe("registerUserAction", () => {
   });
 
   it("returns failure when repository returns an error", async () => {
-    const mockRepo = MockUserRepository({
-      create: async () => Result.failure(new Error("DB error")),
-    });
+    mockUserRepository.create.mockResolvedValue(Result.failure(new Error("DB error")));
 
-    const action = registerUserAction(mockRepo);
-    const result = await action(validUser);
+    const result = await registerUser(validUser);
 
     expect(result).toEqual({
       success: false,

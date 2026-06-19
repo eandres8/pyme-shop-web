@@ -1,28 +1,35 @@
-import { getCountriesAction } from "./get-countries";
-import { MockCountryRepository } from "@/tests/mocks/repositories";
+jest.mock("../../providers", () => ({
+  countryRepository: {
+    list: jest.fn(),
+  },
+}));
+
+import { getCountries } from "./get-countries";
 import { Result } from "@/src/core/utils";
-import type { TCountry } from "@/src/core/types";
 
-describe("getCountriesAction", () => {
+const mockCountryRepository = jest.requireMock("../../providers").countryRepository;
+
+describe("getCountries", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("returns country list when repository succeeds", async () => {
-    const countries: TCountry[] = [{ id: "US", name: "United States" }];
-    const mockRepo = MockCountryRepository({
-      list: async () => Result.success(countries),
-    });
+    const countries = [
+      { id: "US", name: "United States" },
+      { id: "MX", name: "Mexico" },
+    ];
+    mockCountryRepository.list.mockResolvedValue(Result.success(countries));
 
-    const action = getCountriesAction(mockRepo);
-    const result = await action();
+    const result = await getCountries();
 
     expect(result).toEqual(countries);
   });
 
   it("returns empty array when repository fails", async () => {
-    const mockRepo = MockCountryRepository({
-      list: async () => Result.failure(new Error("DB error")),
-    });
+    mockCountryRepository.list.mockResolvedValue(Result.failure(new Error("DB error")));
 
-    const action = getCountriesAction(mockRepo);
-    const result = await action();
+    const result = await getCountries();
 
     expect(result).toEqual([]);
   });

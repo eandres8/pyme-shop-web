@@ -1,25 +1,33 @@
+jest.mock("../../providers", () => ({
+  userAddressRepository: {
+    findByUserId: jest.fn(),
+  },
+}));
+
 import { getUserAddress } from "./get-user-address";
-import { MockUserAddressRepository } from "@/tests/mocks/repositories";
 import { UserAddress } from "@/src/core/entities";
 import { Result } from "@/src/core/utils";
 
-describe("getUserAddress", () => {
-  it("returns empty object when userId is empty", async () => {
-    const mockRepo = MockUserAddressRepository();
-    const action = getUserAddress(mockRepo);
+const mockUserAddressRepository = jest.requireMock("../../providers").userAddressRepository;
 
-    const result = await action("");
+describe("getUserAddress", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns empty object when userId is empty", async () => {
+    const result = await getUserAddress("");
 
     expect(result).toEqual({});
+    expect(mockUserAddressRepository.findByUserId).not.toHaveBeenCalled();
   });
 
   it("returns empty object when repository returns failure", async () => {
-    const mockRepo = MockUserAddressRepository({
-      findByUserId: async () => Result.failure(new Error("Not found")),
-    });
+    mockUserAddressRepository.findByUserId.mockResolvedValue(
+      Result.failure(new Error("Not found")),
+    );
 
-    const action = getUserAddress(mockRepo);
-    const result = await action("user-1");
+    const result = await getUserAddress("user-1");
 
     expect(result).toEqual({});
   });
@@ -35,12 +43,9 @@ describe("getUserAddress", () => {
       phone: "555-0100",
       userId: "user-1",
     });
-    const mockRepo = MockUserAddressRepository({
-      findByUserId: async () => Result.success(address),
-    });
+    mockUserAddressRepository.findByUserId.mockResolvedValue(Result.success(address));
 
-    const action = getUserAddress(mockRepo);
-    const result = await action("user-1");
+    const result = await getUserAddress("user-1");
 
     expect(result).toHaveProperty("country", "US");
     expect(result).toHaveProperty("first_name", "John");

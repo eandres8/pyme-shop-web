@@ -1,28 +1,33 @@
-import { getProductStockBySlugAction } from "./get-product-stock-by-slug";
-import { MockProductRepository } from "@/tests/mocks/repositories";
+jest.mock("../../providers", () => ({
+  productRepository: {
+    productBySlug: jest.fn(),
+  },
+}));
+
+import { getProductStockBySlug } from "./get-product-stock-by-slug";
 import { Product } from "@/src/core/entities";
 import { Result } from "@/src/core/utils";
 
-describe("getProductStockBySlugAction", () => {
-  it("returns the stock count when product is found", async () => {
-    const product = Product.fromJson({ id: "prod-1", in_stock: 42 });
-    const mockRepo = MockProductRepository({
-      productBySlug: async () => Result.success(product),
-    });
+const mockProductRepository = jest.requireMock("../../providers").productRepository;
 
-    const action = getProductStockBySlugAction(mockRepo);
-    const result = await action("test-product");
+describe("getProductStockBySlug", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns the stock count when product is found", async () => {
+    const product = Product.fromJson({ id: "1", in_stock: 42 });
+    mockProductRepository.productBySlug.mockResolvedValue(Result.success(product));
+
+    const result = await getProductStockBySlug("test-product");
 
     expect(result).toBe(42);
   });
 
   it("returns 0 when repository fails", async () => {
-    const mockRepo = MockProductRepository({
-      productBySlug: async () => Result.failure(new Error("Not found")),
-    });
+    mockProductRepository.productBySlug.mockResolvedValue(Result.failure(new Error("Not found")));
 
-    const action = getProductStockBySlugAction(mockRepo);
-    const result = await action("non-existent");
+    const result = await getProductStockBySlug("non-existent");
 
     expect(result).toBe(0);
   });

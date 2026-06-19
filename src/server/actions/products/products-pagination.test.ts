@@ -1,88 +1,76 @@
-import { getPaginatedProductsWithImagesAction } from "./products-pagination";
-import { MockProductRepository } from "@/tests/mocks/repositories";
+jest.mock("../../providers", () => ({
+  productRepository: {
+    listProducts: jest.fn(),
+    countProducts: jest.fn(),
+  },
+}));
+
+import { getPaginatedProductsWithImages } from "./products-pagination";
 import { Product } from "@/src/core/entities";
 import { Result } from "@/src/core/utils";
 
-const makeProduct = (id: string) => Product.fromJson({ id, title: `Product ${id}`, slug: id });
+const mockProductRepository = jest.requireMock("../../providers").productRepository;
 
-describe("getPaginatedProductsWithImagesAction", () => {
+describe("getPaginatedProductsWithImages", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("returns paginated products with default page and take", async () => {
-    const products = [makeProduct("p1"), makeProduct("p2")];
-    const mockRepo = MockProductRepository({
-      listProducts: async () => Result.success(products),
-      countProducts: async () => Result.success({ currentPage: 1, totalPages: 1 }),
-    });
+    const products = [Product.fromJson({ id: "1", title: "Product 1" })];
+    mockProductRepository.listProducts.mockResolvedValue(Result.success(products));
+    mockProductRepository.countProducts.mockResolvedValue(
+      Result.success({ currentPage: 1, totalPages: 1 }),
+    );
 
-    const action = getPaginatedProductsWithImagesAction(mockRepo);
-    const result = await action({});
+    const result = await getPaginatedProductsWithImages({});
 
     expect(result.data).toEqual(products);
-    expect(result.currentPage).toBe(1);
-    expect(result.totalPages).toBe(1);
+    expect(mockProductRepository.listProducts).toHaveBeenCalledWith({ page: 1, take: 10, category: undefined });
   });
 
   it("passes page, take and category to repository", async () => {
-    const mockRepo = MockProductRepository({
-      listProducts: async (props) => {
-        expect(props.page).toBe(2);
-        expect(props.take).toBe(5);
-        expect(props.category).toBe("men");
-        return Result.success([]);
-      },
-      countProducts: async (props) => {
-        expect(props.page).toBe(2);
-        expect(props.take).toBe(5);
-        expect(props.category).toBe("men");
-        return Result.success({ currentPage: 2, totalPages: 3 });
-      },
-    });
+    mockProductRepository.listProducts.mockResolvedValue(Result.success([]));
+    mockProductRepository.countProducts.mockResolvedValue(
+      Result.success({ currentPage: 2, totalPages: 3 }),
+    );
 
-    const action = getPaginatedProductsWithImagesAction(mockRepo);
-    const result = await action({ page: 2, take: 5, category: "men" });
+    const result = await getPaginatedProductsWithImages({ page: 2, take: 5, category: "men" });
 
     expect(result.currentPage).toBe(2);
-    expect(result.totalPages).toBe(3);
+    expect(mockProductRepository.listProducts).toHaveBeenCalledWith({
+      page: 2, take: 5, category: "men",
+    });
   });
 
   it("clamps page and take to minimum of 1", async () => {
-    const mockRepo = MockProductRepository({
-      listProducts: async (props) => {
-        expect(props.page).toBe(1);
-        expect(props.take).toBe(1);
-        return Result.success([]);
-      },
-      countProducts: async (props) => {
-        expect(props.page).toBe(1);
-        expect(props.take).toBe(1);
-        return Result.success({ currentPage: 1, totalPages: 1 });
-      },
+    mockProductRepository.listProducts.mockResolvedValue(Result.success([]));
+    mockProductRepository.countProducts.mockResolvedValue(
+      Result.success({ currentPage: 1, totalPages: 1 }),
+    );
+
+    await getPaginatedProductsWithImages({ page: 0, take: -1 });
+
+    expect(mockProductRepository.listProducts).toHaveBeenCalledWith({
+      page: 1, take: 1, category: undefined,
     });
-
-    const action = getPaginatedProductsWithImagesAction(mockRepo);
-    const result = await action({ page: 0, take: -1 });
-
-    expect(result.currentPage).toBe(1);
   });
 
   it("throws when listProducts fails", async () => {
-    const mockRepo = MockProductRepository({
-      listProducts: async () => Result.failure(new Error("List failed")),
-      countProducts: async () => Result.success({ currentPage: 1, totalPages: 1 }),
-    });
+    mockProductRepository.listProducts.mockResolvedValue(Result.failure(new Error("List failed")));
+    mockProductRepository.countProducts.mockResolvedValue(
+      Result.success({ currentPage: 1, totalPages: 1 }),
+    );
 
-    const action = getPaginatedProductsWithImagesAction(mockRepo);
-
-    await expect(action({})).rejects.toThrow("List failed");
+    await expect(getPaginatedProductsWithImages({})).rejects.toThrow("List failed");
   });
 
   it("throws when countProducts fails", async () => {
-    const mockRepo = MockProductRepository({
-      listProducts: async () => Result.success([]),
-      countProducts: async () => Result.failure(new Error("Count failed")),
-    });
+    mockProductRepository.listProducts.mockResolvedValue(Result.success([]));
+    mockProductRepository.countProducts.mockResolvedValue(
+      Result.failure(new Error("Count failed")),
+    );
 
-    const action = getPaginatedProductsWithImagesAction(mockRepo);
-
-    await expect(action({})).rejects.toThrow("Count failed");
+    await expect(getPaginatedProductsWithImages({})).rejects.toThrow("Count failed");
   });
 });
