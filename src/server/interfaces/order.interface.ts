@@ -6,5 +6,5 @@ export interface IOrderRepository {
   getById(id: string): Promise<Result<Order>>;
   trxNewOrder(payload: TNewOrder): Promise<Result<Order>>;
   listOrdersByUser(userId: string): Promise<Result<Order[]>>;
-  listOrders(): Promise<Result<Order[]>>;
+  listOrders(tenantId?: string): Promise<Result<Order[]>>;
 }

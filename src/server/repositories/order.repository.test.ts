@@ -216,6 +216,23 @@ describe('OrderRepository', () => {
 
       expect(mockClient.order.findMany).toHaveBeenCalledWith({
         orderBy: { created_at: 'desc' },
+        where: undefined,
+        include: { orderItems: true, orderAddresses: true },
+      });
+      expect(result.isOk).toBe(true);
+      if (result.isOk) {
+        expect(result.data).toHaveLength(1);
+      }
+    });
+
+    it('filters by tenantId when provided', async () => {
+      mockClient.order.findMany.mockResolvedValue([mockOrderEntity]);
+
+      const result = await repo.listOrders('tenant-1');
+
+      expect(mockClient.order.findMany).toHaveBeenCalledWith({
+        orderBy: { created_at: 'desc' },
+        where: { tenant_id: 'tenant-1' },
         include: { orderItems: true, orderAddresses: true },
       });
       expect(result.isOk).toBe(true);

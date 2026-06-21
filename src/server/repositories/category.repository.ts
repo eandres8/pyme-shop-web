@@ -27,8 +27,10 @@ export function CategoryRepository(client: PrismaClient): ICategoryRepository {
     return Result.success(data.map((c) => Category.fromJson(c)));
   };
 
-  const listCategories = async () => {
-    const [data, error] = await to(category.findMany());
+  const listCategories = async (tenantId?: string) => {
+    const [data, error] = await to(category.findMany({
+      where: tenantId ? { tenant_id: tenantId } : undefined,
+    }));
 
     if (error) {
       logger.error({ error });

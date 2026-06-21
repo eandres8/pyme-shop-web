@@ -5,4 +5,5 @@ export * from './general.type';
 export * from './order.type';
 export * from './product-image.type';
 export * from './product.type';
+export * from './tenant.type';
 export * from './user.type';

@@ -16,7 +16,7 @@ const uploadFiles = UploadFilesRepository();
 export function ProductRepository(client: PrismaClient): IProductRepository {
   const logger = Logger("ProductRepository");
 
-  const listProducts = async ({ page, take, category }: TListProps) => {
+  const listProducts = async ({ page, take, category, tenantId }: TListProps) => {
     const [result, error] = await to(
       client.product.findMany({
         take,
@@ -30,6 +30,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
         where: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           gender: category as any,
+          ...(tenantId ? { tenant_id: tenantId } : {}),
         },
       }),
     );
@@ -52,12 +53,13 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
     );
   }
 
-  const countProducts = async ({ page, take, category }: TListProps) => {
+  const countProducts = async ({ page, take, category, tenantId }: TListProps) => {
     const [result, error] = await to(
       client.product.count({
         where: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           gender: category as any,
+          ...(tenantId ? { tenant_id: tenantId } : {}),
         },
       }),
     );

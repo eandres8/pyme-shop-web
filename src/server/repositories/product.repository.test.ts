@@ -54,6 +54,21 @@ describe('ProductRepository', () => {
       }
     });
 
+    it('filters by tenantId when provided', async () => {
+      mockClient.product.findMany.mockResolvedValue([mockProductEntity]);
+
+      const result = await repo.listProducts({ page: 1, take: 10, tenantId: 'tenant-1' });
+
+      expect(mockClient.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            tenant_id: 'tenant-1',
+          }),
+        }),
+      );
+      expect(result.isOk).toBe(true);
+    });
+
     it('returns empty array when no products', async () => {
       mockClient.product.findMany.mockResolvedValue([]);
 
@@ -87,6 +102,23 @@ describe('ProductRepository', () => {
       expect(result.isOk).toBe(true);
       if (result.isOk) {
         expect(result.data).toEqual({ currentPage: 1, totalPages: 3 });
+      }
+    });
+
+    it('filters by tenantId when provided', async () => {
+      mockClient.product.count.mockResolvedValue(10);
+
+      const result = await repo.countProducts({ page: 1, take: 10, tenantId: 'tenant-1' });
+
+      expect(mockClient.product.count).toHaveBeenCalledWith({
+        where: {
+          gender: undefined,
+          tenant_id: 'tenant-1',
+        },
+      });
+      expect(result.isOk).toBe(true);
+      if (result.isOk) {
+        expect(result.data).toEqual({ currentPage: 1, totalPages: 1 });
       }
     });
 

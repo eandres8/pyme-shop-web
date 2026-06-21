@@ -52,6 +52,20 @@ export function createPrismaClientMock(overrides: Record<string, unknown> = {}) 
       delete: jest.fn(),
       deleteMany: jest.fn(),
     },
+    tenant: {
+      create: jest.fn(),
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      deleteMany: jest.fn(),
+    },
+    tenantUser: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+      deleteMany: jest.fn(),
+    },
     $transaction: jest.fn(),
   };
 

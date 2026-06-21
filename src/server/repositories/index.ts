@@ -4,6 +4,7 @@ export * from './order.repository';
 export * from './product-image.repository';
 export * from './product.repository';
 export * from './seed.repository';
+export * from './tenant.repository';
 export * from './upload-files.repository';
 export * from './user-address.repository';
 export * from './user.repository';

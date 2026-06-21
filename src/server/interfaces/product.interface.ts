@@ -6,6 +6,7 @@ export type TListProps = {
   page: number;
   take: number;
   category?: string;
+  tenantId?: string;
 };
 
 export interface IProductRepository {

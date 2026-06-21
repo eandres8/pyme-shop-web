@@ -58,6 +58,22 @@ describe('CategoryRepository', () => {
       }
     });
 
+    it('filters by tenantId when provided', async () => {
+      mockClient.category.findMany.mockResolvedValue([
+        { id: 'cat-1', name: 'men' },
+      ]);
+
+      const result = await repo.listCategories('tenant-1');
+
+      expect(mockClient.category.findMany).toHaveBeenCalledWith({
+        where: { tenant_id: 'tenant-1' },
+      });
+      expect(result.isOk).toBe(true);
+      if (result.isOk) {
+        expect(result.data).toHaveLength(1);
+      }
+    });
+
     it('returns empty array when no categories', async () => {
       mockClient.category.findMany.mockResolvedValue([]);
 

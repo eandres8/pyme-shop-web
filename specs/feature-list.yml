@@ -67,6 +67,19 @@ features:
     description: Implement multitenancy support in the prisma entities to allow multiple sellers to manage their products and orders independently.
     acceptance:
       - Create tenant model in database
+      - The tenants must to have an main user wich will create as admin for this tenant
+      - Create a tenant_users table for admin user relation, in which can set others users roles
+      - Create the repository for create a tenant from a form user
+      - Create relation with models Order, Category, Product
+      - Crate a Client Extensions for set tenant_id on each db query
+    status: DONE
+    sdd: true
+  - id: 6
+    name: DL_6
+    title: Add multitenancy support to backend
+    description: Implement multitenancy support in the prisma entities to allow multiple sellers to manage their products and orders independently.
+    acceptance:
+      - Create tenant model in database
       - Create middleware to identify tenant from request, based on subdomain or request header
       - Ensure the workflow runs on push and pull request events
     status: PENDING
