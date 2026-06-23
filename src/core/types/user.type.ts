@@ -1,3 +1,5 @@
+import type { TTenantUserEntity, TUserTenant } from "./tenant.type";
+
 export type TUserRole = 'admin' | 'user';
 
 export type TUser = {
@@ -8,6 +10,7 @@ export type TUser = {
   readonly password: string;
   readonly role: TUserRole;
   readonly image: string;
+  readonly tenant: TUserTenant;
 };
 
 export type TUserEntity = {
@@ -18,6 +21,7 @@ export type TUserEntity = {
   readonly password: string;
   readonly role: TUserRole;
   readonly image: string;
+  readonly tenantUsers: TTenantUserEntity[];
   readonly created_at: Date;
   readonly updated_at: Date;
 };
@@ -29,4 +33,5 @@ export type TPublicUser = {
   readonly email_verified: string;
   readonly role: TUserRole;
   readonly image: string;
+  readonly tenant: string;
 };

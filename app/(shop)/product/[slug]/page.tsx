@@ -45,6 +45,8 @@ export default async function ProductDetail({ params }: Props) {
     notFound();
   }
 
+  const isPremium = false;
+
   return (
     <article className="md:mt-5 mb-20 grid grid-cols-1 md:grid-cols-3 gap-3">
       <div className="col-span-1 md:col-span-2">
@@ -63,7 +65,7 @@ export default async function ProductDetail({ params }: Props) {
         </h1>
         <p className="text-lg mb-5">${product.price}</p>
         
-        <AddToCart product={product.toJson()} isPremium />
+        <AddToCart product={product.toJson()} isPremium={isPremium} />
 
         <h3 className="font-bold text-sm">Descripción</h3>
         <p className="font-light">{product.description}</p>

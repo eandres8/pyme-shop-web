@@ -10,6 +10,7 @@ import {
 import { Product } from "@/src/core/entities";
 import type { TCartProduct, TProduct, TSize } from "@/src/core/types";
 import { useCartStore } from "@/src/client/stores";
+import { currencyFormat } from "@/src/shared/utils";
 
 type Props = {
   isPremium?: boolean;
@@ -49,33 +50,49 @@ export const AddToCart: React.FC<Props> = ({ isPremium, product }) => {
     setSize(undefined);
   };
 
+  const sentToWhatsapp = () => () => {
+    const phone = "573158258459";
+    const message = `Hola! Me interesa el siguiente producto:
+      - *Producto:* ${product.title}
+      - *Precio:* ${currencyFormat(product.price!)}
+      - *Referencia:* ${product.id}
+      Por favor, confírmame disponibilidad.`;
+
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+  }
+
   return (
     <>
-      {posted && !size && (
+      {isPremium && posted && !size && (
         <span className="text-md text-red-500 fade-in">
           Debe de seleccionar una talla*
         </span>
       )}
 
-      <SizeSelector
-        availableSizes={productItem.sizes}
-        selectedSize={size}
-        onSizeChanged={setSize}
-      />
+      {isPremium && (
+        <>
+          <SizeSelector
+            availableSizes={productItem.sizes}
+            selectedSize={size}
+            onSizeChanged={setSize}
+          />
 
-      <QuantitySelector quantity={quantity} onQuantityChanged={SetQuantity} />
+          <QuantitySelector quantity={quantity} onQuantityChanged={SetQuantity} />
 
-      {isPremium ? (
+          <button
+            className="flex items-center justify-center gap-2 btn-primary my-5 cursor-pointer"
+            onClick={addToCart}
+          >
+            Agregar al carrito
+          </button>
+        </>
+      )}
+
+      {!isPremium && (
         <button
           className="flex items-center justify-center gap-2 btn-primary my-5 cursor-pointer"
-          onClick={addToCart}
-        >
-          Agregar al carrito
-        </button>
-      ) : (
-        <button
-          className="flex items-center justify-center gap-2 btn-primary my-5 cursor-pointer"
-          onClick={() => console.log('added to whatsapp')}
+          onClick={sentToWhatsapp()}
         >
           Lo quiero <IoLogoWhatsapp size={20} />
         </button>

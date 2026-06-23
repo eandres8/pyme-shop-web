@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 import type { TActionResponse, TProductData, TProductUpdate } from '@/src/core/types';
 import { productRepository } from '../../providers';
+import { auth } from '@/src/auth.config';
 
 const productSchema = z.object({
   id: z.uuid({ version: "v4" }).optional(),
@@ -20,6 +21,8 @@ const productSchema = z.object({
 });
 
 export async function updateProductInfo(formData: FormData): Promise<TActionResponse<TProductData>> {
+  const session = await auth();
+
   const data = Object.fromEntries(formData);
   const productParsed = productSchema.safeParse(data);
 
@@ -33,6 +36,7 @@ export async function updateProductInfo(formData: FormData): Promise<TActionResp
   const product = {
     ...productParsed.data,
     slug: productParsed.data.slug.toLowerCase().replaceAll(/ /g, '_').trim(),
+    tenantId: session?.user?.tenant,
   } as TProductUpdate;
 
   const images = formData.has('images') ? formData.getAll('images') as File[] : [];

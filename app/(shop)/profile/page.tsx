@@ -12,7 +12,7 @@ export default async function ProfilePage() {
   }
 
   const user = session.user;
-
+  
   const result = await getTenantByUserId(user.id);
 
   const tenant = result.success ? result.data : null;

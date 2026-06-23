@@ -26,6 +26,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
             take: 2,
             select: { url: true, id: true, product_id: true },
           },
+          tenant: true,
         },
         where: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -122,6 +123,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
           productImages: {
             select: { url: true, id: true, product_id: true },
           },
+          tenant: true,
         },
       }),
     );
@@ -146,6 +148,9 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
             in: productIdList,
           },
         },
+        include: {
+          tenant: true,
+        }
       }),
     );
 
@@ -157,12 +162,12 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
     }
 
     return Result.success(
-      data.map((p) => Product.fromEntity(p as TProductEntity)),
+      data.map((p) => Product.fromEntity(p as unknown as TProductEntity)),
     );
   }
 
   const updateProductInfo = async (product: TProductUpdate, images: File[]) => {
-    const { id, tags, sizes, categoryId, inStock, ...rest } = product;
+    const { id, tags, sizes, categoryId, inStock, tenantId, ...rest } = product;
     const tagsList = tags.split(",").map((tag) => tag.trim().toLowerCase());
 
     const [data, error] = await to(
@@ -184,7 +189,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
                 set: tagsList,
               },
             },
-          })) as TProductEntity;
+          })) as unknown as TProductEntity;
         } else {
           productData = (await client.product.create({
             data: {
@@ -192,6 +197,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
               ...(rest as any),
               in_stock: inStock,
               category_id: categoryId,
+              tenant_id: tenantId,
               sizes: {
                 set: sizes as TSize[],
               },
@@ -199,7 +205,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
                 set: tagsList,
               },
             },
-          })) as TProductEntity;
+          })) as unknown as TProductEntity;
         }
 
         if (images.length > 0) {

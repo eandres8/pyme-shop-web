@@ -1,3 +1,4 @@
+import type { TTenantInfo } from "../types";
 import type {
   TGenderTypes,
   TProduct,
@@ -23,6 +24,7 @@ export class Product {
     readonly categoryId: string,
     readonly gender: TGenderTypes,
     readonly productImages: TProductImage[],
+    readonly tenant: TTenantInfo,
   ) {}
 
   static fromJson(data: Partial<TProduct>) {
@@ -40,6 +42,13 @@ export class Product {
       data?.category_id || "",
       data?.gender || ("" as TGenderTypes),
       [],
+      {
+        id: data?.tenant?.id || '',
+        name: data?.tenant?.name || '',
+        slug: data?.tenant?.slug || '',
+        address: data?.tenant?.address || '',
+        phone: data?.tenant?.phone || '',
+      },
     );
   }
 
@@ -58,6 +67,13 @@ export class Product {
       data?.category_id || "",
       data?.gender || ("" as TGenderTypes),
       data?.productImages || [],
+      {
+        id: data?.tenant?.id || '',
+        name: data?.tenant?.name || '',
+        slug: data?.tenant?.slug || '',
+        address: data?.tenant?.address || '',
+        phone: data?.tenant?.phone || '',
+      },
     );
   }
 
@@ -75,6 +91,9 @@ export class Product {
       type: this.type,
       category_id: this.categoryId,
       gender: this.gender,
+      tenant: {
+        ...this.tenant,
+      },
     };
   }
 
@@ -92,6 +111,9 @@ export class Product {
       type: this.type,
       category_id: this.categoryId,
       gender: this.gender,
+      tenant: {
+        ...this.tenant,
+      },
     };
   }
 }

@@ -95,6 +95,7 @@ export const Sidebar = () => {
               {
                 isAdmin && (
                   <>
+                    <p className="mt-5 p-2 font-semibold text-sm text-gray-400">Mi tienda</p>
                     <Link
                       href="/admin/products"
                       onClick={closeMenu}

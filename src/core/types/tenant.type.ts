@@ -9,6 +9,9 @@ export type TTenant = {
   readonly users: TTenantUser[];
 };
 
+export type TTenantInfo = Omit<TTenant, 'users'>;
+export type TUserTenant = Omit<TTenant, 'users'> & { role: string; };
+
 export type TTenantEntity = {
   readonly id: string;
   readonly name: string;
@@ -32,4 +35,5 @@ export type TTenantUserEntity = {
   readonly user_id: string;
   readonly tenant_id: string;
   readonly role: TTenantUserRole;
+  readonly tenant?: TTenant;
 };

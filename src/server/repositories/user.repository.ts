@@ -34,8 +34,21 @@ export function UserRepository(client: PrismaClient): IUserRepository {
   };
 
   const findByEmail = async (email: string) => {
-    const [result, error] = await to(
-      client.user.findUnique({ where: { email } }),
+    const [data, error] = await to(
+      client.user.findUnique({ where: { email }, include: { tenantUsers: {
+        select: {
+          role: true,
+          tenant: {
+            select: {
+              id: true,
+              name: true,
+              phone: true,
+              address: true,
+              slug: true,
+            }
+          }
+        },
+      } } }),
     );
 
     if (error) {
@@ -45,9 +58,9 @@ export function UserRepository(client: PrismaClient): IUserRepository {
       );
     }
 
-    const data = User.fromEntity(result as unknown as TUserEntity);
+    const user = User.fromEntity(data as unknown as TUserEntity);
 
-    return Result.success(data);
+    return Result.success(user);
   }
 
   const findByTenant = async (tenant: string) => {

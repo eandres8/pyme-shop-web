@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
-import type { TPublicUser, TUser, TUserEntity, TUserRole } from "../types";
+
+import type { TPublicUser, TUser, TUserEntity, TUserRole, TUserTenant } from "../types";
 
 export class User {
   private constructor(
@@ -10,6 +11,7 @@ export class User {
     readonly password: string,
     readonly role: TUserRole,
     readonly image: string,
+    readonly tenant: TUserTenant,
   ) {}
 
   static fromJson(data: Partial<TUser>) {
@@ -21,6 +23,14 @@ export class User {
       data?.password || '',
       data?.role || 'user',
       data?.image || '',
+      {
+        id: data?.tenant?.id || '',
+        address: data?.tenant?.address || '',
+        name: data?.tenant?.name || '',
+        phone: data?.tenant?.phone || '',
+        slug: data?.tenant?.slug || '',
+        role: data?.tenant?.role || '',
+      }
     );
   }
   
@@ -33,6 +43,14 @@ export class User {
       data?.password || '',
       data?.role || 'user',
       data?.image || '',
+      {
+        id: data?.tenantUsers?.at(0)?.tenant?.id || '',
+        address: data?.tenantUsers?.at(0)?.tenant?.address || '',
+        name: data?.tenantUsers?.at(0)?.tenant?.name || '',
+        phone: data?.tenantUsers?.at(0)?.tenant?.phone || '',
+        slug: data?.tenantUsers?.at(0)?.tenant?.slug || '',
+        role: data?.tenantUsers?.at(0)?.role || '',
+      }
     );
   }
 
@@ -46,6 +64,7 @@ export class User {
       data?.password || this.password,
       data?.role || this.role,
       data?.image || this.image,
+      data?.tenant || this.tenant,
     );
   }
 
@@ -73,6 +92,7 @@ export class User {
       email_verified: this.emailVerified?.toISOString() || '',
       role: this.role as TUserRole,
       image: this.image,
+      tenant: ['owner', 'admin'].includes(this.tenant.role) ? this.tenant.id : '',
     };
   }
 }
