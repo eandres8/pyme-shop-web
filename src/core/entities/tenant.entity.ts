@@ -1,12 +1,13 @@
-import type { TTenant, TTenantEntity } from '../types';
+import type { TTenant, TTenantEntity, TTenantUser } from '../types';
 
 export class Tenant {
   private constructor(
     readonly id: string,
     readonly name: string,
     readonly slug: string,
-    readonly createdAt: Date,
-    readonly updatedAt: Date,
+    readonly phone: string,
+    readonly address: string,
+    readonly users: TTenantUser[],
   ) {}
 
   static fromJson(data: Partial<TTenant>) {
@@ -14,8 +15,14 @@ export class Tenant {
       data?.id || '',
       data?.name || '',
       data?.slug || '',
-      data?.created_at ? new Date(data.created_at) : new Date(),
-      data?.updated_at ? new Date(data.updated_at) : new Date(),
+      data?.phone || '',
+      data?.address || '',
+      data?.users?.map((u) => ({
+        id: u?.id || '',
+        tenant_id: u?.tenant_id || '',
+        user_id: u?.user_id || '',
+        role: u?.role || '',
+      })) || [],
     );
   }
 
@@ -24,8 +31,14 @@ export class Tenant {
       data?.id || '',
       data?.name || '',
       data?.slug || '',
-      data?.created_at || new Date(),
-      data?.updated_at || new Date(),
+      data?.phone || '',
+      data?.address || '',
+      data?.users?.map((u) => ({
+        id: u?.id || '',
+        tenant_id: u?.tenant_id || '',
+        user_id: u?.user_id || '',
+        role: u?.role || '',
+      })) || [],
     );
   }
 
@@ -34,8 +47,26 @@ export class Tenant {
       data?.id || this.id,
       data?.name || this.name,
       data?.slug || this.slug,
-      data?.created_at ? new Date(data.created_at) : this.createdAt,
-      data?.updated_at ? new Date(data.updated_at) : this.updatedAt,
+      data?.phone || this.phone,
+      data?.address || this.address,
+      data?.users?.map((u) => ({
+        id: u?.id || '',
+        tenant_id: u?.tenant_id || '',
+        user_id: u?.user_id || '',
+        role: u?.role || '',
+      })) || this.users,
     );
+  }
+
+  createSlug() {
+    const slug = this.name.trim().replaceAll(' ', '-').toLowerCase();
+
+    return this.copyWith({
+      slug,
+    });
+  }
+
+  isAdmin(userId: string) {
+    return this.users.some((u) => u.user_id === userId && ['owner', 'admin'].includes(u.role));
   }
 }

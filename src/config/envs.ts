@@ -4,6 +4,7 @@ type TEnvs = {
   PORT: number;
   ORIGIN: string;
   NODE_ENV: string;
+  BACKLIST_KEY_WORDS: string[];
   DB_HOST: string;
   DB_PORT: number;
   DB_USER: string;
@@ -20,6 +21,7 @@ const envsSchema = z.object({
   PORT: z.coerce.number().transform((val) => Number(val.toFixed(0))),
   ORIGIN: z.string(),
   NODE_ENV: z.string(),
+  BACKLIST_KEY_WORDS: z.array(z.string()),
   DB_HOST: z.string(),
   DB_PORT: z.coerce.number().transform((val) => Number(val.toFixed(0))),
   DB_USER: z.string(),
@@ -32,7 +34,10 @@ const envsSchema = z.object({
   CLOUDINARY_API_SECRET: z.string(),
 });
 
-const envsParsed = envsSchema.safeParse(process.env);
+const envsParsed = envsSchema.safeParse({
+  ...process.env,
+  BACKLIST_KEY_WORDS: process.env.BACKLIST_KEY_WORDS?.split(","),
+});
 
 if (!envsParsed.success) {
   console.error('Error parsing envs', envsParsed.error);

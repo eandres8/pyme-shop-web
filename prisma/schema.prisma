@@ -42,6 +42,8 @@ enum TenantUserRole {
 model Tenant {
   id         String   @id @default(uuid())
   name       String
+  phone      String
+  address    String
   slug       String   @unique
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

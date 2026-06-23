@@ -13,6 +13,8 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
         data: {
           name: tenant.name,
           slug: tenant.slug,
+          address: tenant.address,
+          phone: tenant.phone,
         },
       }),
     );
@@ -48,7 +50,20 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
 
   const findBySlug = async (slug: string): Promise<Result<Tenant>> => {
     const [data, error] = await to(
-      client.tenant.findUnique({ where: { slug } }),
+      client.tenant.findUnique({ where: { slug }, select: {
+        id: true,
+        address: true,
+        name: true,
+        phone: true,
+        slug: true,
+        users: {
+        select: {
+          id: true,
+          user_id: true,
+          role: true,
+          tenant_id: true,
+        }
+      } } }),
     );
 
     if (error) {
@@ -75,6 +90,8 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
           data: {
             name: tenant.name,
             slug: tenant.slug,
+            phone: tenant.phone,
+            address: tenant.address,
           },
         });
 

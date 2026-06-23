@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import { Product } from "@/src/core/entities";
 import type { TPaginateData } from "@/src/core/types";
@@ -11,8 +11,11 @@ type Props = {
   category?: string;
 };
 
-export async function getPaginatedProductsWithImages(props: Props): Promise<TPaginateData<Product[]>> {
-  const logger = Logger('getPaginatedProductsWithImagesAction');
+export async function getPaginatedProductsWithImages(
+  props: Props,
+): Promise<TPaginateData<Product[]>> {
+  const logger = Logger("getPaginatedProductsWithImages");
+
   const { page = 1, take = 10, category } = props;
 
   const pageNumber = page < 1 ? 1 : Number(page);
@@ -28,7 +31,7 @@ export async function getPaginatedProductsWithImages(props: Props): Promise<TPag
       page: pageNumber,
       take: takeNumber,
       category,
-    })
+    }),
   ]);
 
   const [products, countProducts] = result;
@@ -36,7 +39,7 @@ export async function getPaginatedProductsWithImages(props: Props): Promise<TPag
   if (!products.isOk || !countProducts.isOk) {
     const err = (products as Fail).error || (countProducts as Fail).error;
     logger.error(err);
-    
+
     throw err;
   }
 

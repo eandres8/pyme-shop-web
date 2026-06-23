@@ -12,7 +12,7 @@ export default async function AuthLayout({ children }: TLayoutProps) {
 
   return (
     <main className="flex justify-center">
-      <div className="w-full sm:w-87.5 px-10">
+      <div className="flex justify-center sm:w-87.5 md:w-full h-screen items-center">
         {children}
       </div>
     </main>

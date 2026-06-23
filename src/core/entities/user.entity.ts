@@ -59,6 +59,12 @@ export class User {
     });
   }
 
+  toAdmin() {
+    return this.copyWith({
+      role: 'admin',
+    });
+  }
+
   toPublic(): TPublicUser {
     return {
       id: this.id,
