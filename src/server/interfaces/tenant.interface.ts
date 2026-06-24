@@ -9,4 +9,5 @@ export interface ITenantRepository {
   addUser(tenantId: string, userId: string, role: string): Promise<Result<TenantUser>>;
   listUsers(tenantId: string): Promise<Result<TenantUser[]>>;
   removeUser(tenantId: string, userId: string): Promise<Result<number>>;
+  findByAdminId(userId: string): Promise<Result<Tenant>>;
 }

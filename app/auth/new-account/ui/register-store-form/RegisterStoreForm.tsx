@@ -30,7 +30,7 @@ export const RegisterStoreForm: React.FC = () => {
     }
 
     await login(data.email, data.password);
-    window.location.replace('/admin/profile');
+    window.location.replace('/profile');
   }
 
   return (

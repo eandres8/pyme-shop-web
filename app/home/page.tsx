@@ -28,7 +28,7 @@ export default async function HomePage() {
       <article className="flex flex-col justify-center p-4 gap-2 w-full mb-2 md:mb-10">
         <h2 className="text-xl font-bold mb-2 md:mb-4 text-gray-400" id="pricing">Precios</h2>
         <div className="flex flex-col md:flex-row justify-center gap-2 md:gap-10">
-          <section className="border border-gray-100 rounded-md p-4">
+          <section className="border-2 border-gray-100 rounded-md p-4">
             <div className="flex flex-col gap-4 w-3xs">
               <h3 className="font-semibold text-2xl text-center">Free</h3>
               <p className="flex gap-1 items-center">
@@ -49,7 +49,7 @@ export default async function HomePage() {
               </p>
             </div>
           </section>
-          <section className="border border-gray-100 rounded-md p-4">
+          <section className="border-2 border-gray-100 rounded-md p-4">
             <div className="flex flex-col gap-4 w-3xs">
               <h3 className="font-semibold text-xl text-center">$25.000 / mes</h3>
               <p className="flex gap-1 items-center">

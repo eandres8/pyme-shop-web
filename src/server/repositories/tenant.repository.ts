@@ -1,11 +1,11 @@
-import { PrismaClient } from '@/prisma/generated/prisma/client';
-import { Tenant, TenantUser } from '@/src/core/entities';
-import { Logger, Result, to } from '@/src/core/utils';
-import type { ITenantRepository } from '../interfaces';
-import type { TTenantUserRole } from '@/src/core/types';
+import { PrismaClient } from "@/prisma/generated/prisma/client";
+import { Tenant, TenantUser } from "@/src/core/entities";
+import { Logger, Result, to } from "@/src/core/utils";
+import type { ITenantRepository } from "../interfaces";
+import type { TTenantUserRole } from "@/src/core/types";
 
 export function TenantRepository(client: PrismaClient): ITenantRepository {
-  const logger = Logger('TenantRepository');
+  const logger = Logger("TenantRepository");
 
   const create = async (tenant: Tenant): Promise<Result<Tenant>> => {
     const [data, error] = await to(
@@ -22,7 +22,7 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
     if (error) {
       logger.log({ error });
       return Result.failure(
-        new Error(error?.message || 'Error creando tenant'),
+        new Error(error?.message || "Error creando tenant"),
       );
     }
 
@@ -30,19 +30,17 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
   };
 
   const findById = async (id: string): Promise<Result<Tenant>> => {
-    const [data, error] = await to(
-      client.tenant.findUnique({ where: { id } }),
-    );
+    const [data, error] = await to(client.tenant.findUnique({ where: { id } }));
 
     if (error) {
       logger.log({ error });
       return Result.failure(
-        new Error(error?.message || 'Error consultando tenant'),
+        new Error(error?.message || "Error consultando tenant"),
       );
     }
 
     if (!data) {
-      return Result.failure(new Error('Tenant no encontrado'));
+      return Result.failure(new Error("Tenant no encontrado"));
     }
 
     return Result.success(Tenant.fromEntity(data));
@@ -50,31 +48,35 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
 
   const findBySlug = async (slug: string): Promise<Result<Tenant>> => {
     const [data, error] = await to(
-      client.tenant.findUnique({ where: { slug }, select: {
-        id: true,
-        address: true,
-        name: true,
-        phone: true,
-        slug: true,
-        users: {
+      client.tenant.findUnique({
+        where: { slug },
         select: {
           id: true,
-          user_id: true,
-          role: true,
-          tenant_id: true,
-        }
-      } } }),
+          address: true,
+          name: true,
+          phone: true,
+          slug: true,
+          users: {
+            select: {
+              id: true,
+              user_id: true,
+              role: true,
+              tenant_id: true,
+            },
+          },
+        },
+      }),
     );
 
     if (error) {
       logger.log({ error });
       return Result.failure(
-        new Error(error?.message || 'Error consultando tenant'),
+        new Error(error?.message || "Error consultando tenant"),
       );
     }
 
     if (!data) {
-      return Result.failure(new Error('Tenant no encontrado'));
+      return Result.failure(new Error("Tenant no encontrado"));
     }
 
     return Result.success(Tenant.fromEntity(data));
@@ -99,7 +101,7 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
           data: {
             user_id: adminUserId,
             tenant_id: newTenant.id,
-            role: 'owner',
+            role: "owner",
           },
         });
 
@@ -110,7 +112,7 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
     if (error) {
       logger.log({ error });
       return Result.failure(
-        new Error(error?.message || 'Error creando tenant con admin'),
+        new Error(error?.message || "Error creando tenant con admin"),
       );
     }
 
@@ -135,7 +137,7 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
     if (error) {
       logger.log({ error });
       return Result.failure(
-        new Error(error?.message || 'Error agregando usuario al tenant'),
+        new Error(error?.message || "Error agregando usuario al tenant"),
       );
     }
 
@@ -153,7 +155,7 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
     if (error) {
       logger.log({ error });
       return Result.failure(
-        new Error(error?.message || 'Error listando usuarios del tenant'),
+        new Error(error?.message || "Error listando usuarios del tenant"),
       );
     }
 
@@ -176,11 +178,34 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
     if (error) {
       logger.log({ error });
       return Result.failure(
-        new Error(error?.message || 'Error removiendo usuario del tenant'),
+        new Error(error?.message || "Error removiendo usuario del tenant"),
       );
     }
 
     return Result.success(data.count);
+  };
+
+  const findByAdminId = async (userId: string) => {
+    const [data, error] = await to(
+      client.tenant.findFirst({
+        where: {
+          users: { some: { AND: [{ user_id: userId }, { role: "owner" }] } },
+        },
+      }),
+    );
+
+    if (error) {
+      logger.log({ error });
+      return Result.failure(
+        new Error(error?.message || "Error consultando tenant"),
+      );
+    }
+
+    if (!data) {
+      return Result.failure(new Error("Tenant no encontrado"));
+    }
+
+    return Result.success(Tenant.fromEntity(data));
   };
 
   return {
@@ -191,5 +216,6 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
     addUser,
     listUsers,
     removeUser,
+    findByAdminId,
   };
 }
