@@ -2,9 +2,10 @@ import { PrismaClient } from "@/prisma/generated/prisma/client";
 import { Tenant, TenantUser } from "@/src/core/entities";
 import { Logger, Result, to } from "@/src/core/utils";
 import type { ITenantRepository } from "../interfaces";
+import type { ICategoryRepository } from "../interfaces";
 import type { TTenantUserRole } from "@/src/core/types";
 
-export function TenantRepository(client: PrismaClient): ITenantRepository {
+export function TenantRepository(client: PrismaClient, categoryRepository: ICategoryRepository): ITenantRepository {
   const logger = Logger("TenantRepository");
 
   const create = async (tenant: Tenant): Promise<Result<Tenant>> => {
@@ -104,6 +105,13 @@ export function TenantRepository(client: PrismaClient): ITenantRepository {
             role: "owner",
           },
         });
+
+        // Copy global categories to new tenant
+        const globalCategoriesResult = await categoryRepository.listCategories();
+        if (globalCategoriesResult.isOk && globalCategoriesResult.data.length > 0) {
+          const categoryNames = globalCategoriesResult.data.map(c => c.name);
+          await categoryRepository.createCategoriesForTenant(newTenant.id, categoryNames);
+        }
 
         return newTenant;
       }),

@@ -18,5 +18,5 @@ export const countryRepository = CountryRepository(prismaDbClient);
 export const userAddressRepository = UserAddressRepository(prismaDbClient);
 export const orderRepository = OrderRepository(prismaDbClient);
 export const productImageRepository = ProductImageRepository(prismaDbClient);
-export const tenantRepository = TenantRepository(prismaDbClient);
+export const tenantRepository = TenantRepository(prismaDbClient, categoryRepository);
 export const uploadFilesRepository = UploadFilesRepository();

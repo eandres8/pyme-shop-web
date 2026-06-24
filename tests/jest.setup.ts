@@ -24,3 +24,4 @@ process.env.AUTH_SECRET = "test-secret-key-for-jest";
 process.env.CLOUDINARY_CLOUD_NAME = "test";
 process.env.CLOUDINARY_API_KEY = "test";
 process.env.CLOUDINARY_API_SECRET = "test";
+process.env.BACKLIST_KEY_WORDS = "admin,api,www";

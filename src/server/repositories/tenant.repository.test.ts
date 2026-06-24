@@ -3,9 +3,18 @@ import { PrismaClient } from '@/prisma/generated/prisma/client';
 import { TenantRepository } from './tenant.repository';
 import { Tenant, TenantUser } from '@/src/core/entities';
 import type { TTenantEntity, TTenantUserEntity } from '@/src/core/types';
+import type { ICategoryRepository } from '../interfaces';
+import { Result } from '@/src/core/utils';
 
 const mockClient = createPrismaClientMock();
-const repo = TenantRepository(mockClient as unknown as PrismaClient);
+
+const mockCategoryRepository: ICategoryRepository = {
+  createCategories: jest.fn().mockResolvedValue(Result.success([])),
+  createCategoriesForTenant: jest.fn().mockResolvedValue(Result.success([])),
+  listCategories: jest.fn().mockResolvedValue(Result.success([])),
+};
+
+const repo = TenantRepository(mockClient as unknown as PrismaClient, mockCategoryRepository);
 
 const mockTenantEntity: TTenantEntity = {
   id: 'tenant-1',
@@ -252,7 +261,17 @@ describe('TenantRepository', () => {
   });
 
   describe('createWithAdmin', () => {
-    it('creates tenant and assigns admin via transaction', async () => {
+    it('creates tenant, assigns admin, and copies categories via transaction', async () => {
+      (mockCategoryRepository.listCategories as jest.Mock).mockResolvedValue(
+        Result.success([
+          { id: 'cat-1', name: 'Electronics' },
+          { id: 'cat-2', name: 'Clothing' },
+        ]),
+      );
+      (mockCategoryRepository.createCategoriesForTenant as jest.Mock).mockResolvedValue(
+        Result.success([]),
+      );
+
       mockClient.$transaction.mockImplementation(
         async (cb: (...args: unknown[]) => unknown) => {
           const tx = {
@@ -271,6 +290,8 @@ describe('TenantRepository', () => {
       const result = await repo.createWithAdmin(tenant, 'user-1');
 
       expect(mockClient.$transaction).toHaveBeenCalledTimes(1);
+      expect(mockCategoryRepository.listCategories).toHaveBeenCalledTimes(1);
+      expect(mockCategoryRepository.createCategoriesForTenant).toHaveBeenCalledWith('tenant-1', ['Electronics', 'Clothing']);
       expect(result.isOk).toBe(true);
       if (result.isOk) {
         expect(result.data).toBeInstanceOf(Tenant);

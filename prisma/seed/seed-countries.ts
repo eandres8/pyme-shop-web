@@ -1,6 +1,7 @@
 type TCountry = {
   name: string;
   id: string;
+  
 }
 
 export const seedCountries: TCountry[] = [

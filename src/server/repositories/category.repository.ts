@@ -42,8 +42,28 @@ export function CategoryRepository(client: PrismaClient): ICategoryRepository {
     return Result.success(data.map((c) => Category.fromJson(c)));
   }
 
+  const createCategoriesForTenant = async (tenantId: string, categories: string[]) => {
+    const categoryList = categories.map((c) =>
+      category.create({
+        data: { name: c, tenant_id: tenantId },
+      }),
+    );
+
+    const [data, error] = await to(client.$transaction(categoryList));
+
+    if (error) {
+      logger.error({ error });
+      return Result.failure(
+        new Error(error?.message || "Error insertando categorías para tenant"),
+      );
+    }
+
+    return Result.success(data.map((c) => Category.fromJson(c)));
+  };
+
   return {
     createCategories,
+    createCategoriesForTenant,
     listCategories,
   };
 }

@@ -75,11 +75,13 @@ features:
     status: DONE
     sdd: true
   - id: 6
-    name: DL_6
-    title: Add multitenancy support to backend
-    description: Implement multitenancy support in the prisma entities to allow multiple sellers to manage their products and orders independently.
+    name: DL_6_default_categories
+    title: Add default categories on each new tenant
+    description: When a new user is register as tenants owner, the system must insert the categories from the same table but put in each the tenant_id. This for the user posibility for edit those without modify the categories default registered.
     acceptance:
-      - Create tenant model in database
-      - Create middleware to identify tenant from request, based on subdomain or request header
+      - In the create tenant server action, must create its categories from the registers in categories table without tenant_id (seed data)
+      - When categories is request for new product page, must filter it by tenant_id, (tenant_id already is stored into session user info for admin/owner users)
       - Ensure the workflow runs on push and pull request events
-    status: PENDING
+      - Validate all tests
+    sdd: true
+    status: DONE

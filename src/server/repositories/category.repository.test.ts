@@ -96,4 +96,34 @@ describe('CategoryRepository', () => {
       }
     });
   });
+
+  describe('createCategoriesForTenant', () => {
+    it('creates categories for a specific tenant', async () => {
+      mockClient.$transaction.mockResolvedValue([
+        { id: 'cat-1', name: 'Electronics', tenant_id: 'tenant-1' },
+        { id: 'cat-2', name: 'Clothing', tenant_id: 'tenant-1' },
+      ]);
+
+      const result = await repo.createCategoriesForTenant('tenant-1', ['Electronics', 'Clothing']);
+
+      expect(mockClient.$transaction).toHaveBeenCalledTimes(1);
+      expect(result.isOk).toBe(true);
+      if (result.isOk) {
+        expect(result.data).toHaveLength(2);
+        expect(result.data[0]).toBeInstanceOf(Category);
+        expect(result.data[0].name).toBe('Electronics');
+      }
+    });
+
+    it('returns Result.failure when $transaction fails', async () => {
+      mockClient.$transaction.mockRejectedValue(new Error('Transaction error'));
+
+      const result = await repo.createCategoriesForTenant('tenant-1', ['Electronics']);
+
+      expect(result.isOk).toBe(false);
+      if (!result.isOk) {
+        expect(result.error.message).toContain('Transaction error');
+      }
+    });
+  });
 });

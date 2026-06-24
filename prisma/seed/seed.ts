@@ -42,6 +42,19 @@ export const initialUsersData: SeedUser[] = [
   },
 ];
 
+export const defaultCategories = [
+  "Electronics",
+  "Clothing",
+  "Home & Garden",
+  "Sports",
+  "Books",
+  "Beauty",
+  "Toys",
+  "Automotive",
+  "Health",
+  "Food & Beverages",
+];
+
 export const initialData: SeedData = {
   products: [
     {
