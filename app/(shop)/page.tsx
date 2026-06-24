@@ -10,7 +10,7 @@ type Props = {
   searchParams: Promise<{ page?: string }>;
 };
 
-export default async function Home({ searchParams }: Props) {
+export default async function MainPage({ searchParams }: Props) {
   const { page } = await searchParams;
 
   const { data, currentPage, totalPages } = await getPaginatedProductsWithImages({
@@ -18,7 +18,7 @@ export default async function Home({ searchParams }: Props) {
   });
 
   if (!data.length) {
-    redirect('/');
+    redirect('/home');
   }
 
   return (

@@ -2,7 +2,7 @@
 
 import { useCartStore } from "@/src/client/stores";
 import { useHydrateValidate } from "@/src/client/data/hooks";
-import { ProductsInCart } from "@/src/shared/components";
+import { ProductsInCart } from "@/src/shared/components/cart";
 
 export const ProductsCartLoader: React.FC = () => {
   const products = useCartStore((state) => state.cart);

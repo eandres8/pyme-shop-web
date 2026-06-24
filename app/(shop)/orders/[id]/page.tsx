@@ -2,10 +2,9 @@ import { IoCardOutline } from "react-icons/io5";
 import clsx from "clsx";
 
 import { Title } from "@/src/shared/components/ui";
-import { OrderInfo, ProductsInCart } from "@/src/shared/components";
-import type { TCartProduct } from "@/src/core/types";
 import { getOrderById } from "@/src/server/actions";
 import { redirect } from "next/navigation";
+import { OrderInfo, ProductsInCart } from "@/src/shared/components/cart";
 
 type Props = {
   params: Promise<{ id: string }>;

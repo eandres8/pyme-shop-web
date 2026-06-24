@@ -2,7 +2,7 @@ import Link from "next/link";
 import { IoAddOutline } from "react-icons/io5";
 
 import { getPaginatedProductsWithImages } from "@/src/server/actions";
-import { Pagination, Title } from "@/src/shared/components";
+import { Pagination, Title } from "@/src/shared/components/ui";
 import { currencyFormat } from "@/src/shared/utils";
 import { ProductImage } from "@/src/shared/components/product";
 

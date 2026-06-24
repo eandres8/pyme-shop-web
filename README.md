@@ -24,7 +24,7 @@ bun start:dev
 You can run migrations from prisma just like this:
 
 ```bash
-docker exec -it postgres_pyme_shop_db_dev psql -U postgres -c "CREATE DATABASE 'pyme-shop';"
+docker exec -it postgres_pyme_shop_db_dev psql -U postgres -c "CREATE DATABASE \"pyme-shop\";"
 
 pnpm dlx prisma migrate dev
 ```

@@ -7,7 +7,7 @@ import clsx from "clsx";
 import { useHydrateValidate } from "@/src/client/data/hooks";
 import { useAddressStore, useCartStore } from "@/src/client/stores";
 import { placeOrder } from "@/src/server/actions";
-import { OrderInfo } from "@/src/shared/components";
+import { OrderInfo } from "@/src/shared/components/cart";
 
 export const PlaceOrder: React.FC = () => {
   const isLoaded = useHydrateValidate();

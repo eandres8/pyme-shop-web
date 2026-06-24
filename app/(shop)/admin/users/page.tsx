@@ -1,5 +1,5 @@
 import { getUserFiltered } from "@/src/server/actions";
-import { Title } from "@/src/shared/components";
+import { Title } from "@/src/shared/components/ui";
 import { UsersTable } from "./ui/users-table/UsersTable";
 
 export default async function UsersAdminPage() {

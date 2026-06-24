@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getCategoryList, getProductBySlug } from "@/src/server/actions";
-import { Title } from "@/src/shared/components";
+import { Title } from "@/src/shared/components/ui";
 import { ProductForm } from "./ui/product-form/ProductForm";
 import type { TProductData } from "@/src/core/types";
 

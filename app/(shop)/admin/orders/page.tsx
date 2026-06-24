@@ -2,7 +2,7 @@ import Link from "next/link";
 import { IoCardOutline } from "react-icons/io5";
 
 import { getPaginatedOrders } from "@/src/server/actions";
-import { Title } from "@/src/shared/components";
+import { Title } from "@/src/shared/components/ui";
 
 export default async function OrdersAdminPage() {
   const result = await getPaginatedOrders();
