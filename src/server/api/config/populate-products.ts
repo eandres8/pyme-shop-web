@@ -18,12 +18,13 @@ export function PopulateProductsAction() {
     ]);
 
     const resultCategory = await categoryRepository.createCategories([
-      "Pants",
-      "Shirts",
-      "Hoodies",
-      "Hats",
-      "Shooes",
-      "Pets",
+      "Pantalones",
+      "Camisetas",
+      "Busos",
+      "Gorras",
+      "Zapatos",
+      "Tenis",
+      "Mascotas",
     ]);
 
     if (!resultCategory.isOk) {

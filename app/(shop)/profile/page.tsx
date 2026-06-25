@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 
 import { auth } from "@/src/auth.config";
-import { Title } from "@/src/shared/components/ui";
-import { getTenantByUserId } from "@/src/server/actions";
+import { PendingAction, Title } from "@/src/shared/components/ui";
+import { getTenantByUserId, getTenantConfig } from "@/src/server/actions";
+
+
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -13,9 +15,14 @@ export default async function ProfilePage() {
 
   const user = session.user;
   
-  const result = await getTenantByUserId(user.id);
+  const [result, resultConfig] = await Promise.all([
+    getTenantByUserId(user.id),
+    getTenantConfig(),
+  ]);
 
   const tenant = result.success ? result.data : null;
+
+  const pendingItems = resultConfig.success ? resultConfig.data! : [];
 
   return (
     <div>
@@ -57,6 +64,18 @@ export default async function ProfilePage() {
               </section>
             )
           }
+        </div>
+        <span className="border border-gray-200 w-full"></span>
+        <div className="flex flex-col gap-2">
+          <h3 className="font-semibold">Mis tareas</h3>
+          <p>Estas son unas configuraciones pendientes que necesitas para tener lista tu tienda y mostrar mejor tu catálogo de productos</p>
+          <div className="flex flex-wrap gap-4 p-4 md:p-10">
+            {
+              pendingItems.map((pi) => (
+                <PendingAction key={pi.id} {...pi} />
+              ))
+            }
+          </div>
         </div>
       </article>
     </div>

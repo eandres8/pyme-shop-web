@@ -37,3 +37,11 @@ export type TTenantUserEntity = {
   readonly role: TTenantUserRole;
   readonly tenant?: TTenant;
 };
+
+export type TStoreConfig = {
+  readonly id: string;
+  readonly url: string;
+  readonly success: boolean;
+  readonly title: string;
+  readonly description: string;
+};
