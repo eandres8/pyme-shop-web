@@ -344,4 +344,78 @@ describe('ProductRepository', () => {
       }
     });
   });
+
+  describe('productExistsBySlug', () => {
+    it('returns true when slug exists for tenant', async () => {
+      mockClient.product.count.mockResolvedValue(1);
+
+      const result = await repo.productExistsBySlug('test-product', 'tenant-1');
+
+      expect(mockClient.product.count).toHaveBeenCalledWith({
+        where: {
+          slug: 'test-product',
+          tenant_id: 'tenant-1',
+        },
+      });
+      expect(result.isOk).toBe(true);
+      if (result.isOk) {
+        expect(result.data).toBe(true);
+      }
+    });
+
+    it('returns false when slug does not exist for tenant', async () => {
+      mockClient.product.count.mockResolvedValue(0);
+
+      const result = await repo.productExistsBySlug('non-existent', 'tenant-1');
+
+      expect(result.isOk).toBe(true);
+      if (result.isOk) {
+        expect(result.data).toBe(false);
+      }
+    });
+
+    it('returns Result.failure when prisma throws', async () => {
+      mockClient.product.count.mockRejectedValue(new Error('Count error'));
+
+      const result = await repo.productExistsBySlug('test-product', 'tenant-1');
+
+      expect(result.isOk).toBe(false);
+      if (!result.isOk) {
+        expect(result.error.message).toContain('Count error');
+      }
+    });
+  });
+
+  describe('productBySlug with tenantId', () => {
+    it('filters by tenantId when provided', async () => {
+      mockClient.product.findFirst.mockResolvedValue(mockProductEntity);
+
+      const result = await repo.productBySlug('test-product', 'tenant-1');
+
+      expect(mockClient.product.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            slug: 'test-product',
+            tenant_id: 'tenant-1',
+          }),
+        }),
+      );
+      expect(result.isOk).toBe(true);
+    });
+
+    it('works without tenantId for backward compatibility', async () => {
+      mockClient.product.findFirst.mockResolvedValue(mockProductEntity);
+
+      const result = await repo.productBySlug('test-product');
+
+      expect(mockClient.product.findFirst).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            slug: 'test-product',
+          }),
+        }),
+      );
+      expect(result.isOk).toBe(true);
+    });
+  });
 });

@@ -113,11 +113,12 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
     return Result.success(data.map((p) => Product.fromEntity(p as unknown as TProductEntity)));
   }
 
-  const productBySlug = async (slug: string) => {
+  const productBySlug = async (slug: string, tenantId?: string) => {
     const [data, error] = await to(
       client.product.findFirst({
         where: {
           slug,
+          ...(tenantId ? { tenant_id: tenantId } : {}),
         },
         include: {
           productImages: {
@@ -138,6 +139,24 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
     return Result.success(
       Product.fromEntity(data as unknown as TProductEntity),
     );
+  }
+
+  const productExistsBySlug = async (slug: string, tenantId: string) => {
+    const [count, error] = await to(
+      client.product.count({
+        where: {
+          slug,
+          tenant_id: tenantId,
+        },
+      }),
+    );
+
+    if (error) {
+      logger.log({ error });
+      return Result.failure(new Error(error?.message || "Error verificando slug"));
+    }
+
+    return Result.success(count > 0);
   }
 
   const listProductsByIds = async (productIdList: string[]) => {
@@ -246,6 +265,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
     countProducts,
     createMultiple,
     productBySlug,
+    productExistsBySlug,
     listProductsByIds,
     updateProductInfo,
   };

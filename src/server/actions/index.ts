@@ -12,6 +12,7 @@ export * from './products/get-product-by-slug';
 export * from './products/get-product-stock-by-slug';
 export * from './products/products-pagination';
 export * from './products/update-product-info';
+export * from './products/validate-product-slug';
 export * from './order/get-order-by-id';
 export * from './order/get-order-list-by-user';
 export * from './order/get-paginated-orders';

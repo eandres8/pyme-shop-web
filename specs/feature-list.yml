@@ -85,3 +85,16 @@ features:
       - Validate all tests
     sdd: true
     status: DONE
+  - id: 7
+    name: DL_7_product_slug_validation
+    title: Create slug dynamic validation
+    description: When user is creating a new product, is necessary validate if that slug already exist
+    acceptance:
+      - In ProductForm.tsx component is a new product form, when user is typing a product name create a slug for it
+      - Create an server action (src/server/actions/products/validate-product-slug) for search and validate if a new product slug per tenant already exist, then notify as error message
+      - Validate async if exist slug typed for user on product creation
+      - tenant_id exist for user on session
+      - Ensure the workflow runs on push and pull request events
+      - Validate tests for new server actions, modified components and repositories validated
+    sdd: true
+    status: DONE
