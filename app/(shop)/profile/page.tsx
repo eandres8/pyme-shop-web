@@ -3,14 +3,18 @@ import { redirect } from "next/navigation";
 import { auth } from "@/src/auth.config";
 import { PendingAction, Title } from "@/src/shared/components/ui";
 import { getTenantByUserId, getTenantConfig } from "@/src/server/actions";
+import type { TStoreConfig } from "@/src/core/types";
 
-
+type TConfig = {
+  tenant: string;
+  pendingItems: TStoreConfig[];
+};
 
 export default async function ProfilePage() {
   const session = await auth();
 
   if (!session?.user) {
-    redirect("/");
+    redirect("/auth/login");
   }
 
   const user = session.user;
@@ -22,7 +26,8 @@ export default async function ProfilePage() {
 
   const tenant = result.success ? result.data : null;
 
-  const pendingItems = resultConfig.success ? resultConfig.data! : [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const config = resultConfig.success ? resultConfig.data! : { tenant: '', pendingItems: [] } as TConfig;
 
   return (
     <div>
@@ -31,6 +36,11 @@ export default async function ProfilePage() {
       <article className="flex flex-col items-center gap-2 md:gap-10 mb-4 md:mb-10">
         <div className="flex flex-col w-2/4 gap-8">
           <section className="flex flex-col gap-2">
+            <div className="p-4 rounded-sm bg-gray-100 mb-2">
+              <p>
+                Comparte el link de la tienda: <span className="text-semibold underline">{`${config.tenant}.local`} </span>
+              </p>
+            </div>
             <h3 className="font-bold text-xl mb-2">Usuario</h3>
             <div className="flex flex-col md:flex-row gap-2 md:gap-20">
               <div>
@@ -71,7 +81,7 @@ export default async function ProfilePage() {
           <p>Estas son unas configuraciones pendientes que necesitas para tener lista tu tienda y mostrar mejor tu catálogo de productos</p>
           <div className="flex flex-wrap gap-4 p-4 md:p-10">
             {
-              pendingItems.map((pi) => (
+              config?.pendingItems?.map((pi) => (
                 <PendingAction key={pi.id} {...pi} />
               ))
             }

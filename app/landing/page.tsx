@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { IoCheckmark } from "react-icons/io5";
 
-export default async function HomePage() {
-
+export default async function LandingPage() {
   return (
     <>
       <article className="flex flex-col md:flex-row justify-center p-4 md:p-10 gap-2 md:gap-6 md:mb-10">

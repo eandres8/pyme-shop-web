@@ -4,7 +4,9 @@ type TEnvs = {
   PORT: number;
   ORIGIN: string;
   NODE_ENV: string;
+  NEXT_PUBLIC_HOST: string;
   BACKLIST_KEY_WORDS: string[];
+  DOMAIN_LOGIN_URL: string;
   DB_HOST: string;
   DB_PORT: number;
   DB_USER: string;
@@ -21,7 +23,9 @@ const envsSchema = z.object({
   PORT: z.coerce.number().transform((val) => Number(val.toFixed(0))),
   ORIGIN: z.string(),
   NODE_ENV: z.string(),
+  NEXT_PUBLIC_HOST: z.string(),
   BACKLIST_KEY_WORDS: z.array(z.string()),
+  DOMAIN_LOGIN_URL: z.string(),
   DB_HOST: z.string(),
   DB_PORT: z.coerce.number().transform((val) => Number(val.toFixed(0))),
   DB_USER: z.string(),

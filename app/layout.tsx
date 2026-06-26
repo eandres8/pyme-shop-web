@@ -7,7 +7,7 @@ import { AuthProvider } from "@/src/client/providers";
 export const metadata: Metadata = {
   title: {
     template: '%s - Pyme Shop',
-    default: 'Home',
+    default: 'Inicio',
   },
   description: "Tienda para ofrecer al público productos de pequeños empresarios",
 };
