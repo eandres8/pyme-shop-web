@@ -33,6 +33,7 @@ export type TOrderEntity = {
   readonly created_at: Date;
   readonly updated_at: Date;
   readonly user_id: string;
+  readonly tenant_id: string;
 }
 
 export type TOrderItem = {

@@ -12,6 +12,7 @@ import {
 } from "@/src/shared/components/product";
 import { getProductBySlug } from "@/src/server/actions";
 import { AddToCart } from './ui/add-to-cart/AddToCart';
+import { textFormat } from '@/src/shared/utils';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -67,7 +68,13 @@ export default async function ProductDetail({ params }: Props) {
         
         <AddToCart product={product.toJson()} isPremium={isPremium} />
 
-        <h3 className="font-bold text-sm">Descripción</h3>
+        <p className="flex gap-1 items-center">
+          tienda: 
+          <span className="text-sm px-2 py-1 rounded-xl bg-gray-100">
+            {textFormat(product.tenant.name).toTitle()}
+          </span>
+        </p>
+        <h3 className="font-bold text-sm mt-4">Descripción</h3>
         <p className="font-light">{product.description}</p>
       </div>
     </article>

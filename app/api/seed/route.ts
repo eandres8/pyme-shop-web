@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { populateProducts } from '@/src/server/api/config/populate-products';
+import { envs } from '@/src/config/envs';
 
-export async function POST(_: NextRequest) {
-  if (process.env.NODE_ENV !== 'development') {
+export async function POST(req: NextRequest) {
+  const apiKey = req.headers.get('seed-api-key');
+
+  if (envs.NODE_ENV === 'production' && apiKey !== envs.API_KEY_SEED) {
     return new NextResponse(JSON.stringify({ message: 'Im a teapod' }), {
       status: 418,
       headers: { 'Content-Type': 'application/json' }

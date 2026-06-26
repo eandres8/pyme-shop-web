@@ -3,9 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 
-import { TProduct } from "@/src/core/types/product.type";
+import type { TProduct } from "@/src/core/types";
 import { Product } from "@/src/core/entities";
 import { ProductImage } from "../product-image/ProductImage";
+import { currencyFormat } from "@/src/shared/utils";
 
 type Props = {
   product: Partial<TProduct>;
@@ -32,7 +33,10 @@ export const ProductGridItem: React.FC<Props> = ({ product: p }) => {
       </Link>
       <div className="p-4 flex flex-col">
         <Link className="hover:text-blue-600 hover:cursor-pointer" href={`/product/${product.slug}`}>{product.title}</Link>
-        <span className="font-bold">${product.price}</span>
+        <div className="flex justify-between">
+          <span className="font-bold">{currencyFormat(product.price)}</span>
+          <span className="text-sm px-2 py-1 rounded-xl bg-gray-100">{product.tenant.name}</span>
+        </div>
       </div>
     </div>
   );

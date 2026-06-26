@@ -5,7 +5,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import { registerUserStore } from "@/src/server/actions";
+import { login, registerUserStore } from "@/src/server/actions";
 
 type FormInputs = {
   email: string;
@@ -29,7 +29,8 @@ export const RegisterStoreForm: React.FC = () => {
       return;
     }
 
-    window.location.replace(resp.data);
+    await login(data.email, data.password);
+    window.location.replace('/');
   }
 
   return (

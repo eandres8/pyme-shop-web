@@ -31,6 +31,7 @@ export const ProductImage: React.FC<Props> = ({
       alt={alt}
       className={className}
       style={style}
+      loading="eager"
     />
   );
 };

@@ -1,15 +1,16 @@
 {
   "name": "pyme-shop-web",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "start:dev": "next dev",
-    "build": "next build",
+    "build": "npm run prisma:deploy && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "jest --ci --coverage",
     "test:ci": "jest --ci --coverage",
+    "prisma:deploy": "npx prisma generate",
     "run:seed": "tsx ./src/data/seed/seed-database.ts"
   },
   "dependencies": {

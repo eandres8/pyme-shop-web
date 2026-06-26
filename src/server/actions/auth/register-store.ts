@@ -4,7 +4,6 @@ import { Tenant, User } from "@/src/core/entities";
 import { tenantRepository, userRepository } from "../../providers";
 import type { TActionResponse, TPublicUser } from "@/src/core/types";
 import { Logger } from "@/src/core/utils";
-import { envs } from "@/src/config/envs";
 
 type TNewUserStore = {
   name: string;
@@ -17,7 +16,7 @@ type TNewUserStore = {
 
 export async function registerUserStore(
   data: TNewUserStore,
-): Promise<TActionResponse<string>> {
+): Promise<TActionResponse<TPublicUser>> {
   const logger = Logger("registerUserStore");
 
   const user = User.fromJson(data).toAdmin().cipherPass();
@@ -53,10 +52,8 @@ export async function registerUserStore(
     };
   }
 
-  const path = envs.DOMAIN_LOGIN_URL.replace("domain", "pymeshop.local");
-
   return {
     success: true,
-    data: path,
+    data: result.data.toPublic(),
   };
 }

@@ -36,11 +36,11 @@ export default async function ProfilePage() {
       <article className="flex flex-col items-center gap-2 md:gap-10 mb-4 md:mb-10">
         <div className="flex flex-col w-2/4 gap-8">
           <section className="flex flex-col gap-2">
-            <div className="p-4 rounded-sm bg-gray-100 mb-2">
+            {/* <div className="p-4 rounded-sm bg-gray-100 mb-2">
               <p>
                 Comparte el link de la tienda: <span className="text-semibold underline">{`${config.tenant}.local`} </span>
               </p>
-            </div>
+            </div> */}
             <h3 className="font-bold text-xl mb-2">Usuario</h3>
             <div className="flex flex-col md:flex-row gap-2 md:gap-20">
               <div>
