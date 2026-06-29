@@ -13,13 +13,13 @@ cloudinary.config({
 export function UploadFilesRepository(): IUploadFilesRepository {
   const logger = Logger("UploadFilesRepository");
   
-  const uploadImages = async (files: File[], tenant?: string): Promise<Result<string[]>> => {
+  const uploadImages = async (files: File[], tenant: string = ''): Promise<Result<string[]>> => {
     const uploadResults = await Promise.all(files.map(async (image) => {
       const buffer = await image.arrayBuffer();
       const base64Image = Buffer.from(buffer).toString('base64');
   
       return cloudinary.uploader.upload(`data:image/jpeg;base64,${base64Image}`, {
-        folder: 'pyme-shop/tests',
+        folder: `pyme-shop/tests/${tenant}`,
       })
       .then((result) => result.secure_url)
       .catch((error) => {

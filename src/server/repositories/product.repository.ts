@@ -227,8 +227,10 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
           })) as unknown as TProductEntity;
         }
 
+        const tenant = await tx.tenant.findFirst({ where: { id: tenantId } });
+
         if (images.length > 0) {
-          const imagesUploaded = await uploadFiles.uploadImages(images);
+          const imagesUploaded = await uploadFiles.uploadImages(images, tenant?.slug);
 
           if (!imagesUploaded.isOk) {
             throw new Error(imagesUploaded.error.message || "Error subiendo las imágenes");
