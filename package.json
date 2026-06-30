@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "license": "MIT",
   "scripts": {
     "start:dev": "next dev",
     "build": "npm run prisma:deploy && next build",
