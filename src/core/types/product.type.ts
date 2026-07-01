@@ -3,6 +3,7 @@ import type { TTenant, TTenantInfo } from "./tenant.type";
 export type TSize = "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL";
 export type TValidTypes = "shirts" | "pants" | "hoodies" | "hats";
 export type TGenderTypes = "men" | "women" | "kid" | "unisex";
+export type TProductStatus = "ACTIVE" | "INACTIVE";
 
 export type TProduct = {
   readonly id: string;
@@ -17,6 +18,7 @@ export type TProduct = {
   readonly type: TValidTypes;
   readonly category_id: string;
   readonly gender: TGenderTypes;
+  readonly status: TProductStatus;
   readonly tenant: TTenantInfo;
 }
 
@@ -39,6 +41,7 @@ export type TProductEntity = {
   readonly type: TValidTypes;
   readonly category_id: string;
   readonly gender: TGenderTypes;
+  readonly status: TProductStatus;
   readonly tenant_id: string;
   readonly tenant: TTenant;
   readonly created_at: Date;
@@ -68,6 +71,7 @@ export type TProductData = {
   readonly type: TValidTypes;
   readonly category_id: string;
   readonly gender: TGenderTypes;
+  readonly status: TProductStatus;
   readonly tenant: TTenantInfo;
 }
 
@@ -83,4 +87,5 @@ export type TProductUpdate = {
   readonly tenantId: string;
   readonly categoryId: string;
   readonly gender: TGenderTypes;
+  readonly status?: TProductStatus;
 };

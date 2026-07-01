@@ -98,3 +98,17 @@ features:
       - Validate tests for new server actions, modified components and repositories validated
     sdd: true
     status: DONE
+  - id: 8
+    name: DL_8_active_inactive_product
+    title: Add a product change status action
+    description: The tenant must have the option for change it products status
+    acceptance:
+      - Add in product prisma schema, the status for a product (ACTIVE/INACTIVE), default ACTIVE on creation
+      - In ProductForm.tsx component for update product info, must have include a toogle button (tailwind) for show and active/inactive it
+      - Update the server actions (src/server/actions/products/*) and Product entity for show and manage status product
+      - The server actions used to render products in `/`, `/[category]` should retrieve only active products
+      - In admin/product view, must show the product status
+      - Ensure the workflow runs on push and pull request events
+      - All tests for server actions, repositories must be success.
+    sdd: true
+    status: DONE

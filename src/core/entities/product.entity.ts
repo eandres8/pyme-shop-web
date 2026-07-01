@@ -5,6 +5,7 @@ import type {
   TProductData,
   TProductEntity,
   TProductImage,
+  TProductStatus,
   TSize,
   TValidTypes,
 } from "../types/product.type";
@@ -24,6 +25,7 @@ export class Product {
     readonly categoryId: string,
     readonly gender: TGenderTypes,
     readonly productImages: TProductImage[],
+    readonly status: TProductStatus,
     readonly tenant: TTenantInfo,
   ) {}
 
@@ -42,6 +44,7 @@ export class Product {
       data?.category_id || "",
       data?.gender || ("" as TGenderTypes),
       [],
+      data?.status || "ACTIVE",
       {
         id: data?.tenant?.id || '',
         name: data?.tenant?.name || '',
@@ -67,6 +70,7 @@ export class Product {
       data?.category_id || "",
       data?.gender || ("" as TGenderTypes),
       data?.productImages || [],
+      data?.status || "ACTIVE",
       {
         id: data?.tenant?.id || '',
         name: data?.tenant?.name || '',
@@ -91,6 +95,7 @@ export class Product {
       type: this.type,
       category_id: this.categoryId,
       gender: this.gender,
+      status: this.status,
       tenant: {
         ...this.tenant,
       },
@@ -111,6 +116,7 @@ export class Product {
       type: this.type,
       category_id: this.categoryId,
       gender: this.gender,
+      status: this.status,
       tenant: {
         ...this.tenant,
       },

@@ -31,6 +31,7 @@ type FormInputs = {
   tags: string;
   gender: 'men' | 'women' | 'kid';
   categoryId: string;
+  status: 'ACTIVE' | 'INACTIVE';
   images?: FileList;
 };
 
@@ -53,11 +54,12 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       gender: product.gender as any,
       categoryId: product.category_id,
+      status: product.status || 'ACTIVE',
       images: undefined,
     },
   });
 
-  watch('sizes');
+  watch(['sizes', 'status']);
 
   useEffect(() => {
     if (!isNewProduct) return;
@@ -124,6 +126,21 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
 
   const deleteImage = (imageId: string, imageUrl: string) => async () => {
     const result = await deleteProductImage(imageId, imageUrl);
+
+    if (!result.success) {
+      toast.error(result.message);
+      return;
+    }
+
+    toast.success('👍 Imagen eliminada correctamente');
+  }
+
+  const productStatus = getValues('status');
+
+  const handleChangeStatus = () => {
+    const newStatus = productStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+
+    setValue('status', newStatus);
   }
 
   const onSubmit = async (data: FormInputs) => {
@@ -144,6 +161,7 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
     formData.append('tags', productInfo.tags);
     formData.append('categoryId', productInfo.categoryId);
     formData.append('gender', productInfo.gender);
+    formData.append('status', productInfo.status);
 
     if (images) {
       for (const image of images) {
@@ -234,6 +252,39 @@ export const ProductForm: React.FC<Props> = ({ product, categories }) => {
               ))
             }
           </select>
+        </div>
+
+        <div className="flex flex-col mb-2">
+          <span className="text-sm font-bold">Estado</span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleChangeStatus}
+              className={clsx(
+                "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                {
+                  "bg-green-500": productStatus === 'ACTIVE',
+                  "bg-gray-400": productStatus === 'INACTIVE',
+                }
+              )}
+            >
+              <span
+                className={clsx(
+                  "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                  {
+                    "translate-x-6": productStatus === 'ACTIVE',
+                    "translate-x-1": productStatus === 'INACTIVE',
+                  }
+                )}
+              />
+            </button>
+            <span className={clsx("text-sm font-medium", {
+              "text-green-600": productStatus === 'ACTIVE',
+              "text-gray-500": productStatus === 'INACTIVE',
+            })}>
+              {productStatus === 'ACTIVE' ? 'Activo' : 'Inactivo'}
+            </span>
+          </div>
         </div>
 
         <button type="submit" disabled={!isValid} className={clsx({

@@ -90,6 +90,48 @@ describe('ProductRepository', () => {
         expect(result.error.message).toContain('Query error');
       }
     });
+
+    it('filters by status ACTIVE by default', async () => {
+      mockClient.product.findMany.mockResolvedValue([mockProductEntity]);
+
+      await repo.listProducts({ page: 1, take: 10 });
+
+      expect(mockClient.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: 'ACTIVE',
+          }),
+        }),
+      );
+    });
+
+    it('filters by explicit status when provided', async () => {
+      mockClient.product.findMany.mockResolvedValue([mockProductEntity]);
+
+      await repo.listProducts({ page: 1, take: 10, status: 'INACTIVE' });
+
+      expect(mockClient.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: 'INACTIVE',
+          }),
+        }),
+      );
+    });
+
+    it('does not filter by status when showAll is true', async () => {
+      mockClient.product.findMany.mockResolvedValue([mockProductEntity]);
+
+      await repo.listProducts({ page: 1, take: 10, showAll: true });
+
+      expect(mockClient.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.not.objectContaining({
+            status: expect.anything(),
+          }),
+        }),
+      );
+    });
   });
 
   describe('countProducts', () => {
@@ -114,6 +156,7 @@ describe('ProductRepository', () => {
         where: {
           gender: undefined,
           tenant_id: 'tenant-1',
+          status: 'ACTIVE',
         },
       });
       expect(result.isOk).toBe(true);
@@ -131,6 +174,48 @@ describe('ProductRepository', () => {
       if (!result.isOk) {
         expect(result.error.message).toContain('Count error');
       }
+    });
+
+    it('counts products with status ACTIVE by default', async () => {
+      mockClient.product.count.mockResolvedValue(5);
+
+      await repo.countProducts({ page: 1, take: 10 });
+
+      expect(mockClient.product.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: 'ACTIVE',
+          }),
+        }),
+      );
+    });
+
+    it('counts products with explicit status when provided', async () => {
+      mockClient.product.count.mockResolvedValue(3);
+
+      await repo.countProducts({ page: 1, take: 10, status: 'INACTIVE' });
+
+      expect(mockClient.product.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            status: 'INACTIVE',
+          }),
+        }),
+      );
+    });
+
+    it('does not filter by status when showAll is true', async () => {
+      mockClient.product.count.mockResolvedValue(10);
+
+      await repo.countProducts({ page: 1, take: 10, showAll: true });
+
+      expect(mockClient.product.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.not.objectContaining({
+            status: expect.anything(),
+          }),
+        }),
+      );
     });
   });
 
@@ -150,6 +235,18 @@ describe('ProductRepository', () => {
         expect(result.data).toHaveLength(1);
         expect(result.data[0]).toBeInstanceOf(Product);
       }
+    });
+
+    it('includes status in product creation', async () => {
+      let capturedOperations: unknown[] = [];
+      mockClient.$transaction.mockImplementation(async (ops: unknown[]) => {
+        capturedOperations = ops;
+        return [mockProductEntity];
+      });
+
+      await repo.createMultiple(products);
+
+      expect(capturedOperations).toHaveLength(1);
     });
 
     it('returns Result.failure when $transaction fails', async () => {
@@ -209,6 +306,7 @@ describe('ProductRepository', () => {
 
       expect(mockClient.product.findMany).toHaveBeenCalledWith({
         where: { id: { in: ['prod-1'] } },
+        include: { tenant: true },
       });
       expect(result.isOk).toBe(true);
       if (result.isOk) {
@@ -242,6 +340,7 @@ describe('ProductRepository', () => {
   describe('updateProductInfo', () => {
     const mockTx = {
       productImage: { createMany: jest.fn() },
+      tenant: { findFirst: jest.fn() },
     };
 
     const baseProduct: TProductUpdate = {
@@ -258,6 +357,7 @@ describe('ProductRepository', () => {
     };
 
     beforeEach(() => {
+      mockTx.tenant.findFirst.mockResolvedValue({ id: 'tenant-1', slug: 'test-tenant' });
       mockClient.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => cb(mockTx));
     });
 
@@ -310,6 +410,37 @@ describe('ProductRepository', () => {
       if (!result.isOk) {
         expect(result.error.message).toContain('Transaction error');
       }
+    });
+
+    it('includes status in product update when provided', async () => {
+      mockClient.product.update.mockResolvedValue(mockProductEntity);
+
+      const productWithStatus = { ...baseProduct, status: 'INACTIVE' as const };
+      const result = await repo.updateProductInfo(productWithStatus, []);
+
+      expect(result.isOk).toBe(true);
+      expect(mockClient.product.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            status: 'INACTIVE',
+          }),
+        }),
+      );
+    });
+
+    it('does not include status in update when not provided', async () => {
+      mockClient.product.update.mockResolvedValue(mockProductEntity);
+
+      const result = await repo.updateProductInfo(baseProduct, []);
+
+      expect(result.isOk).toBe(true);
+      expect(mockClient.product.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.not.objectContaining({
+            status: expect.anything(),
+          }),
+        }),
+      );
     });
 
     it('uploadFiles is called when images are provided', async () => {

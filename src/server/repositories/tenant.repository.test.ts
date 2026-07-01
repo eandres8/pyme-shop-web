@@ -22,6 +22,9 @@ const mockTenantEntity: TTenantEntity = {
   slug: 'mi-tienda',
   created_at: new Date(),
   updated_at: new Date(),
+  phone: '',
+  address: '',
+  users: []
 };
 
 const mockTenantUserEntity: TTenantUserEntity = {

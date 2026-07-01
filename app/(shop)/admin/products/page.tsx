@@ -16,6 +16,7 @@ export default async function ProductsAdminPage({ searchParams }: Props) {
   
   const { data: products, currentPage, totalPages } = await getPaginatedProductsWithImages({
     page: page ? Number(page) : undefined,
+    showAll: true,
   });
 
   return (
@@ -69,6 +70,12 @@ export default async function ProductsAdminPage({ searchParams }: Props) {
               >
                 Tallas
               </th>
+              <th
+                scope="col"
+                className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+              >
+                Estado
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -104,6 +111,15 @@ export default async function ProductsAdminPage({ searchParams }: Props) {
                 </td>
                 <td className="text-sm text-gray-900 font-bold px-6">
                   {p.sizes.join(', ')}
+                </td>
+                <td className="text-sm font-light px-6">
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    p.status === 'ACTIVE'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {p.status === 'ACTIVE' ? 'Activo' : 'Inactivo'}
+                  </span>
                 </td>
               </tr>
             ))}

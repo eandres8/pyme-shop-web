@@ -14,6 +14,7 @@ process.env.PORT = "3000";
 process.env.ORIGIN = "http://localhost:3000";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (process.env as any).NODE_ENV = "test";
+process.env.API_KEY_SEED = "test-api-key-seed";
 process.env.DB_HOST = "localhost";
 process.env.DB_PORT = "5432";
 process.env.DB_USER = "test";

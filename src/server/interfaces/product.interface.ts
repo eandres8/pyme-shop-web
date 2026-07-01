@@ -1,5 +1,5 @@
 import { Product } from "@/src/core/entities";
-import type { TPagination, TProductUpdate } from "@/src/core/types";
+import type { TPagination, TProductUpdate, TProductStatus } from "@/src/core/types";
 import { Result } from "@/src/core/utils";
 
 export type TListProps = {
@@ -7,6 +7,8 @@ export type TListProps = {
   take: number;
   category?: string;
   tenantId?: string;
+  status?: TProductStatus;
+  showAll?: boolean;
 };
 
 export interface IProductRepository {

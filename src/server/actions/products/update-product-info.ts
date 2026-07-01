@@ -18,6 +18,7 @@ const productSchema = z.object({
   tags: z.string(),
   categoryId: z.uuid({ version: "v4" }),
   gender: z.string(),
+  status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
 });
 
 export async function updateProductInfo(formData: FormData): Promise<TActionResponse<TProductData>> {

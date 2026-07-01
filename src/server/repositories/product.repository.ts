@@ -16,7 +16,7 @@ const uploadFiles = UploadFilesRepository();
 export function ProductRepository(client: PrismaClient): IProductRepository {
   const logger = Logger("ProductRepository");
 
-  const listProducts = async ({ page, take, category, tenantId }: TListProps) => {
+  const listProducts = async ({ page, take, category, tenantId, status, showAll }: TListProps) => {
     const [result, error] = await to(
       client.product.findMany({
         take,
@@ -32,6 +32,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           gender: category as any,
           ...(tenantId ? { tenant_id: tenantId } : {}),
+          ...(!showAll ? { status: status ?? 'ACTIVE' } : {}),
         },
       }),
     );
@@ -54,13 +55,14 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
     );
   }
 
-  const countProducts = async ({ page, take, category, tenantId }: TListProps) => {
+  const countProducts = async ({ page, take, category, tenantId, status, showAll }: TListProps) => {
     const [result, error] = await to(
       client.product.count({
         where: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           gender: category as any,
           ...(tenantId ? { tenant_id: tenantId } : {}),
+          ...(!showAll ? { status: status ?? 'ACTIVE' } : {}),
         },
       }),
     );
@@ -94,6 +96,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           gender: p.gender as any,
           category_id: p.categoryId,
+          status: p.status ?? 'ACTIVE',
           productImages: {
             create: p.images.map((url: string) => ({ url })),
           },
@@ -186,7 +189,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
   }
 
   const updateProductInfo = async (product: TProductUpdate, images: File[]) => {
-    const { id, tags, sizes, categoryId, inStock, tenantId, ...rest } = product;
+    const { id, tags, sizes, categoryId, inStock, tenantId, status, ...rest } = product;
     const tagsList = tags.split(",").map((tag) => tag.trim().toLowerCase());
 
     const [data, error] = await to(
@@ -201,6 +204,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
               ...(rest as any),
               in_stock: inStock,
               category_id: categoryId,
+              ...(status ? { status } : {}),
               sizes: {
                 set: sizes as TSize[],
               },
@@ -217,6 +221,7 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
               in_stock: inStock,
               category_id: categoryId,
               tenant_id: tenantId,
+              ...(status ? { status } : {}),
               sizes: {
                 set: sizes as TSize[],
               },

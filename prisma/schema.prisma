@@ -60,6 +60,7 @@ model Product {
   category_id   String
   created_at    DateTime       @default(now())
   updated_at    DateTime       @updatedAt
+  status        ProductStatus  @default(ACTIVE)
   tenant_id     String?
   orderItems    OrderItem[]
   productImages ProductImage[]
@@ -202,4 +203,9 @@ enum Role {
 enum TenantUserRole {
   owner
   admin
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
 }
