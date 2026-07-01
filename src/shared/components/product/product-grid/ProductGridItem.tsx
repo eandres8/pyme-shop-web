@@ -6,7 +6,7 @@ import Link from "next/link";
 import type { TProduct } from "@/src/core/types";
 import { Product } from "@/src/core/entities";
 import { ProductImage } from "../product-image/ProductImage";
-import { currencyFormat } from "@/src/shared/utils";
+import { currencyFormat, textFormat } from "@/src/shared/utils";
 
 type Props = {
   product: Partial<TProduct>;
@@ -35,7 +35,7 @@ export const ProductGridItem: React.FC<Props> = ({ product: p }) => {
         <Link className="hover:text-blue-600 hover:cursor-pointer" href={`/product/${product.slug}`}>{product.title}</Link>
         <div className="flex justify-between">
           <span className="font-bold">{currencyFormat(product.price)}</span>
-          <span className="text-sm px-2 py-1 rounded-xl bg-gray-100">{product.tenant.name}</span>
+          <span className="text-xs px-2 py-1 rounded-xl bg-gray-100">{textFormat(product.tenant.name).toTitle()}</span>
         </div>
       </div>
     </div>
