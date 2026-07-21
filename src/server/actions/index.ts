@@ -21,3 +21,7 @@ export * from './products/update-product-info';
 export * from './products/validate-product-slug';
 export * from './tenant/get-tenant-config/get-tenant-config';
 export * from './tenant/get-tenant-by-user-id/get-tenant-by-user-id';
+// NOTE: get-tenant-by-slug is intentionally NOT re-exported here. It is a
+// plain cached server helper (not a 'use server' action) that imports Prisma,
+// so exporting it from this barrel would pull Prisma into any client component
+// that imports an action from here. Import it directly from its module path.

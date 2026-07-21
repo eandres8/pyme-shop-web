@@ -83,6 +83,21 @@ export function TenantRepository(client: PrismaClient, categoryRepository: ICate
     return Result.success(Tenant.fromEntity(data));
   };
 
+  const listSlugs = async (): Promise<Result<string[]>> => {
+    const [data, error] = await to(
+      client.tenant.findMany({ select: { slug: true } }),
+    );
+
+    if (error) {
+      logger.log({ error });
+      return Result.failure(
+        new Error(error?.message || "Error consultando tenants"),
+      );
+    }
+
+    return Result.success(data.map((t) => t.slug));
+  };
+
   const createWithAdmin = async (
     tenant: Tenant,
     adminUserId: string,
@@ -220,6 +235,7 @@ export function TenantRepository(client: PrismaClient, categoryRepository: ICate
     create,
     findById,
     findBySlug,
+    listSlugs,
     createWithAdmin,
     addUser,
     listUsers,

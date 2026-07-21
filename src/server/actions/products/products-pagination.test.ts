@@ -43,6 +43,22 @@ describe("getPaginatedProductsWithImages", () => {
     });
   });
 
+  it("scopes the query to a tenant when tenantId is provided", async () => {
+    mockProductRepository.listProducts.mockResolvedValue(Result.success([]));
+    mockProductRepository.countProducts.mockResolvedValue(
+      Result.success({ currentPage: 1, totalPages: 1 }),
+    );
+
+    await getPaginatedProductsWithImages({ tenantId: "tenant-1", category: "men" });
+
+    expect(mockProductRepository.listProducts).toHaveBeenCalledWith(
+      expect.objectContaining({ tenantId: "tenant-1", category: "men" }),
+    );
+    expect(mockProductRepository.countProducts).toHaveBeenCalledWith(
+      expect.objectContaining({ tenantId: "tenant-1", category: "men" }),
+    );
+  });
+
   it("clamps page and take to minimum of 1", async () => {
     mockProductRepository.listProducts.mockResolvedValue(Result.success([]));
     mockProductRepository.countProducts.mockResolvedValue(

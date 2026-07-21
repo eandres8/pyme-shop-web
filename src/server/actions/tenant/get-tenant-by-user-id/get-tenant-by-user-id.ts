@@ -1,22 +1,11 @@
 'use server';
 
-// import { headers } from "next/headers";
-
 import { tenantRepository } from "@/src/server/providers";
-// import { mapTenant } from "@/src/core/utils";
 
+// Storefront tenant is resolved from the URL store slug (see get-tenant-by-slug).
+// The admin/session flow below resolves the tenant from the authenticated user,
+// which replaces the retired subdomain-based `mapTenant(host)` resolution.
 export async function getTenantByUserId(userId: string) {
-  // const headerMap = await headers();
-
-  // const tenantSlug = await mapTenant(headerMap.get('host')!);
-
-  // if (!tenantSlug) {
-  //   return {
-  //     success: false,
-  //     data: null,
-  //   };
-  // }
-
   const result = await tenantRepository.findByAdminId(userId);
 
   if (!result.isOk) {

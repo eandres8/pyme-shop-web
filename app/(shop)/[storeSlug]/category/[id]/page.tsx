@@ -1,6 +1,7 @@
-export const revalidate = 86400; // 24 horas
+import { notFound } from "next/navigation";
 
 import { getPaginatedProductsWithImages } from "@/src/server/actions";
+import { getTenantBySlug } from "@/src/server/actions/tenant/get-tenant-by-slug/get-tenant-by-slug";
 import { ProductGrid } from "@/src/shared/components/product";
 import { Pagination, Title } from "@/src/shared/components/ui";
 
@@ -12,17 +13,24 @@ const subtitles: Record<string, string> = {
 };
 
 type Props = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ storeSlug: string; id: string }>;
   searchParams: Promise<{ page?: string }>;
 };
 
 export default async function Category({ params, searchParams }: Props) {
-  const { id } = await params;
+  const { storeSlug, id } = await params;
   const { page, } = await searchParams;
+
+  const tenant = await getTenantBySlug(storeSlug);
+
+  if (!tenant) {
+    notFound();
+  }
 
   const { data, currentPage, totalPages } = await getPaginatedProductsWithImages({
     page: page ? Number(page) : undefined,
     category: id,
+    tenantId: tenant.id,
   });
 
   return (
@@ -32,7 +40,7 @@ export default async function Category({ params, searchParams }: Props) {
         products={data}
       />
 
-      <Pagination totalPages={totalPages} currentPage={currentPage} /> 
+      <Pagination totalPages={totalPages} currentPage={currentPage} />
     </>
-  ); 
+  );
 }

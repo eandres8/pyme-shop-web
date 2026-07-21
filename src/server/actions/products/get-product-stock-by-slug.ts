@@ -2,8 +2,8 @@
 
 import { productRepository } from "../../providers";
 
-export async function getProductStockBySlug(slug: string): Promise<number> {
-  const result = await productRepository.productBySlug(slug);
+export async function getProductStockBySlug(slug: string, tenantId?: string): Promise<number> {
+  const result = await productRepository.productBySlug(slug, tenantId);
 
   if (!result.isOk) {
     return 0;

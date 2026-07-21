@@ -7,14 +7,15 @@ import { getProductStockBySlug } from "@/src/server/actions";
 
 type Props = {
   slug: string;
+  tenantId?: string;
 };
 
-export const StockLabel: React.FC<Props> = ({ slug }) => {
+export const StockLabel: React.FC<Props> = ({ slug, tenantId }) => {
   const [stock, setStock] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
   const getStock = async () => {
-    const productStock = await getProductStockBySlug(slug);
+    const productStock = await getProductStockBySlug(slug, tenantId);
 
     setStock(productStock);
     setIsLoading(false);

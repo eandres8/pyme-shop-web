@@ -10,11 +10,13 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | Command | What it does |
 |---------|-------------|
 | `pnpm start:dev` | `next dev` |
-| `pnpm build` | `next build` |
+| `pnpm build` | `prisma generate && next build` |
 | `pnpm lint` | `eslint` (no typecheck script) |
+| `pnpm test` / `pnpm test:ci` | `jest --ci --coverage` (jsdom env, `ts-jest`) |
 | `pnpm run:seed` | Seeds DB via Prisma |
 
-No typecheck, test, or formatter scripts exist.
+Single test file: `pnpm test -- path/to/file.test.ts` (or `npx jest -t "name"` to filter by test name).
+No typecheck or formatter scripts exist (run `npx tsc --noEmit` manually if needed).
 
 ## Dev setup (always this order)
 1. `docker compose -f docker-compose.dev.yml up --build` (starts Postgres 16)
@@ -46,7 +48,8 @@ No typecheck, test, or formatter scripts exist.
 - DB tables use `@@map` to snake_case (`categories`, `products`, `product_images`, `users`, `cities`, etc.)
 - Images hosted on Cloudinary (configured in `next.config.ts`)
 - Tailwind CSS v4 with `@tailwindcss/postcss` (no `tailwind.config` file)
-- No CI/CD, no test suite, no pre-commit hooks in this repo
+- Tests colocated as `*.test.ts` next to the source file (e.g. `category.repository.test.ts`); Prisma client is mocked via `tests/mocks/prisma-client-stub.ts` (jest `moduleNameMapper`), never hits real Postgres
+- No CI/CD, no pre-commit hooks in this repo
 
 ## SDD workflow (Spec-Driven Development)
 

@@ -24,6 +24,15 @@ describe("getProductStockBySlug", () => {
     expect(result).toBe(42);
   });
 
+  it("scopes the lookup to a tenant when tenantId is provided", async () => {
+    const product = Product.fromJson({ id: "1", in_stock: 42 });
+    mockProductRepository.productBySlug.mockResolvedValue(Result.success(product));
+
+    await getProductStockBySlug("test-product", "tenant-1");
+
+    expect(mockProductRepository.productBySlug).toHaveBeenCalledWith("test-product", "tenant-1");
+  });
+
   it("returns 0 when repository fails", async () => {
     mockProductRepository.productBySlug.mockResolvedValue(Result.failure(new Error("Not found")));
 

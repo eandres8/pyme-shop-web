@@ -142,6 +142,28 @@ describe('TenantRepository', () => {
     });
   });
 
+  describe('listSlugs', () => {
+    it('returns the slugs of every tenant', async () => {
+      mockClient.tenant.findMany.mockResolvedValue([{ slug: 'mi-tienda' }, { slug: 'otra-tienda' }]);
+
+      const result = await repo.listSlugs();
+
+      expect(mockClient.tenant.findMany).toHaveBeenCalledWith({ select: { slug: true } });
+      expect(result.isOk).toBe(true);
+      if (result.isOk) {
+        expect(result.data).toEqual(['mi-tienda', 'otra-tienda']);
+      }
+    });
+
+    it('returns Result.failure when prisma throws', async () => {
+      mockClient.tenant.findMany.mockRejectedValue(new Error('Query error'));
+
+      const result = await repo.listSlugs();
+
+      expect(result.isOk).toBe(false);
+    });
+  });
+
   describe('addUser', () => {
     it('adds a user to tenant successfully', async () => {
       mockClient.tenantUser.create.mockResolvedValue(mockTenantUserEntity);

@@ -5,6 +5,7 @@ export interface ITenantRepository {
   create(tenant: Tenant): Promise<Result<Tenant>>;
   findById(id: string): Promise<Result<Tenant>>;
   findBySlug(slug: string): Promise<Result<Tenant>>;
+  listSlugs(): Promise<Result<string[]>>;
   createWithAdmin(tenant: Tenant, adminUserId: string): Promise<Result<Tenant>>;
   addUser(tenantId: string, userId: string, role: string): Promise<Result<TenantUser>>;
   listUsers(tenantId: string): Promise<Result<TenantUser[]>>;

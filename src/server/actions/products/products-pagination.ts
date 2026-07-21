@@ -9,6 +9,7 @@ type Props = {
   page?: number;
   take?: number;
   category?: string;
+  tenantId?: string;
   status?: TProductStatus;
   showAll?: boolean;
 };
@@ -18,7 +19,7 @@ export async function getPaginatedProductsWithImages(
 ): Promise<TPaginateData<Product[]>> {
   const logger = Logger("getPaginatedProductsWithImages");
 
-  const { page = 1, take = 10, category, status, showAll } = props;
+  const { page = 1, take = 10, category, tenantId, status, showAll } = props;
 
   const pageNumber = page < 1 ? 1 : Number(page);
   const takeNumber = take < 1 ? 1 : Number(take);
@@ -28,6 +29,7 @@ export async function getPaginatedProductsWithImages(
       page: pageNumber,
       take: takeNumber,
       category,
+      tenantId,
       status,
       showAll,
     }),
@@ -35,6 +37,7 @@ export async function getPaginatedProductsWithImages(
       page: pageNumber,
       take: takeNumber,
       category,
+      tenantId,
       status,
       showAll,
     }),

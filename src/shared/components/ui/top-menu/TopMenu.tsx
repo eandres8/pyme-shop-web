@@ -1,32 +1,45 @@
 'use client';
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { IoSearchOutline, IoCartOutline } from 'react-icons/io5';
 
 import { titleFont } from "@/src/config/fonts";
 import { useCartStore, useUIStore } from "@/src/client/stores";
 import { useHydrateValidate } from "@/src/client/data/hooks";
 
+// First segments that are NOT store slugs (session-scoped / global areas).
+// On these routes there is no store context so storefront links fall back to root.
+const NON_STORE_SEGMENTS = new Set([
+  "admin", "cart", "checkout", "orders", "profile", "products",
+  "empty", "search", "auth", "api", "product", "category",
+]);
+
 export const TopMenu = () => {
   const closeMenu = useUIStore((state) => state.openSideMenu);
   const totalItemsInCart = useCartStore((state) => state.getTotalItems());
+  const pathname = usePathname();
 
   const isLoaded = useHydrateValidate();
+
+  const firstSegment = pathname.split("/").filter(Boolean)[0];
+  const storeSlug = firstSegment && !NON_STORE_SEGMENTS.has(firstSegment) ? firstSegment : "";
+  const storeBase = storeSlug ? `/${storeSlug}` : "";
 
   return (
     <nav className="flex px-5 justify-between items-center w-full">
       <div>
-        <Link href="/">
+        <Link href={storeBase || "/"}>
           <span className={`${titleFont.className} antialiased font-bold`}>Pyme</span>
           <span> | Shop</span>
         </Link>
       </div>
 
       <div className="hidden sm:block">
-        <Link className="m-2 p-2 rounded-md transition-all hover:bg-gray-100" href="/category/men">Hombres</Link>
-        <Link className="m-2 p-2 rounded-md transition-all hover:bg-gray-100" href="/category/women">Mujeres</Link>
-        <Link className="m-2 p-2 rounded-md transition-all hover:bg-gray-100" href="/category/kid">Niños</Link>
-        {/* <Link className="m-2 p-2 rounded-md transition-all hover:bg-gray-100" href="/category/pets">Mascotas</Link> */}
+        <Link className="m-2 p-2 rounded-md transition-all hover:bg-gray-100" href={`${storeBase}/category/men`}>Hombres</Link>
+        <Link className="m-2 p-2 rounded-md transition-all hover:bg-gray-100" href={`${storeBase}/category/women`}>Mujeres</Link>
+        <Link className="m-2 p-2 rounded-md transition-all hover:bg-gray-100" href={`${storeBase}/category/kid`}>Niños</Link>
+        {/* <Link className="m-2 p-2 rounded-md transition-all hover:bg-gray-100" href={`${storeBase}/category/pets`}>Mascotas</Link> */}
       </div>
 
       <div className="flex items-center">
