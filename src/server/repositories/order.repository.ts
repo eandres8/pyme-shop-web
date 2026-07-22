@@ -84,6 +84,7 @@ export function OrderRepository(client: PrismaClient): IOrderRepository {
       const order = await tx.order.create({
         data: {
           user_id: payload.userId,
+          tenant_id: payload.tenantId,
           items_in_order: payload.itemsInOrder,
           subtotal: payload.subtotal,
           tax: payload.tax,

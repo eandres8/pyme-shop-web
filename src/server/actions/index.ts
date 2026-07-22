@@ -5,6 +5,7 @@ export * from './auth/login';
 export * from './auth/logout';
 export * from './auth/register-store';
 export * from './auth/register';
+export * from './auth/require-session-tenant';
 export * from './country/get-countries';
 export * from './order/get-order-by-id';
 export * from './order/get-order-list-by-user';

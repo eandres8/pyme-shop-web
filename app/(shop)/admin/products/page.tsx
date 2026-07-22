@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { IoAddOutline } from "react-icons/io5";
 
-import { getPaginatedProductsWithImages } from "@/src/server/actions";
+import { getPaginatedProductsWithImages, requireSessionTenant } from "@/src/server/actions";
 import { Pagination, Title } from "@/src/shared/components/ui";
 import { currencyFormat } from "@/src/shared/utils";
-import { ProductImage } from "@/src/shared/components/product";
+import { ProductImage } from "@/src/shared/components/product/product-image/ProductImage";
 
 type Props = {
   searchParams: Promise<{ page?: string }>;
@@ -13,10 +13,12 @@ type Props = {
 
 export default async function ProductsAdminPage({ searchParams }: Props) {
   const { page } = await searchParams;
-  
+  const tenantId = await requireSessionTenant();
+
   const { data: products, currentPage, totalPages } = await getPaginatedProductsWithImages({
     page: page ? Number(page) : undefined,
     showAll: true,
+    tenantId,
   });
 
   return (

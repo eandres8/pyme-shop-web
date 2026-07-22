@@ -132,6 +132,27 @@ describe('ProductRepository', () => {
         }),
       );
     });
+
+    it('scopes to a tenant and includes inactive products for the admin listing (tenantId + showAll)', async () => {
+      mockClient.product.findMany.mockResolvedValue([mockProductEntity]);
+
+      await repo.listProducts({ page: 1, take: 10, tenantId: 'tenant-1', showAll: true });
+
+      expect(mockClient.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            tenant_id: 'tenant-1',
+          }),
+        }),
+      );
+      expect(mockClient.product.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.not.objectContaining({
+            status: expect.anything(),
+          }),
+        }),
+      );
+    });
   });
 
   describe('countProducts', () => {
@@ -354,10 +375,12 @@ describe('ProductRepository', () => {
       tags: 'tag1, tag2',
       categoryId: 'cat-2',
       gender: 'men',
+      tenantId: 'tenant-1',
     };
 
     beforeEach(() => {
       mockTx.tenant.findFirst.mockResolvedValue({ id: 'tenant-1', slug: 'test-tenant' });
+      mockClient.product.findFirst.mockResolvedValue({ tenant_id: 'tenant-1' });
       mockClient.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => cb(mockTx));
     });
 
@@ -372,6 +395,27 @@ describe('ProductRepository', () => {
       if (result.isOk) {
         expect(result.data).toBeInstanceOf(Product);
       }
+    });
+
+    it('rejects the update when the product belongs to a different tenant', async () => {
+      mockClient.product.findFirst.mockResolvedValue({ tenant_id: 'other-tenant' });
+
+      const result = await repo.updateProductInfo(baseProduct, []);
+
+      expect(result.isOk).toBe(false);
+      if (!result.isOk) {
+        expect(result.error.message).toContain('No tienes permisos');
+      }
+      expect(mockClient.product.update).not.toHaveBeenCalled();
+    });
+
+    it('rejects the update when the product does not exist', async () => {
+      mockClient.product.findFirst.mockResolvedValue(null);
+
+      const result = await repo.updateProductInfo(baseProduct, []);
+
+      expect(result.isOk).toBe(false);
+      expect(mockClient.product.update).not.toHaveBeenCalled();
     });
 
     it('modo create: creates a new product via $transaction when no id', async () => {

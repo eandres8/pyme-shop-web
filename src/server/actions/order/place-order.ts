@@ -9,16 +9,21 @@ import type {
 import { Logger, Result } from "@/src/core/utils";
 import { orderRepository, productRepository } from "../../providers";
 
+type TMappedProducts = {
+  priceMap: Record<string, number>;
+  tenantIds: string[];
+};
+
 const _mapProducts = async (
   productIds: string[],
-): Promise<Result<Record<string, number>>> => {
+): Promise<Result<TMappedProducts>> => {
   const productsResult = await productRepository.listProductsByIds(productIds);
 
   if (!productsResult.isOk) {
     return productsResult;
   }
 
-  const productsMap: Record<string, number> = productsResult.data.reduce(
+  const priceMap: Record<string, number> = productsResult.data.reduce(
     (prev, curr) => ({
       ...prev,
       [curr.id]: curr.price,
@@ -26,7 +31,11 @@ const _mapProducts = async (
     {},
   );
 
-  return Result.success(productsMap);
+  const tenantIds = Array.from(
+    new Set(productsResult.data.map((p) => p.tenant.id).filter(Boolean)),
+  );
+
+  return Result.success({ priceMap, tenantIds });
 };
 
 export async function placeOrder(
@@ -55,7 +64,16 @@ export async function placeOrder(
     };
   }
 
-  const productsMap = productsMapResult.data;
+  const { priceMap: productsMap, tenantIds } = productsMapResult.data;
+
+  if (tenantIds.length !== 1) {
+    return {
+      success: false,
+      message: "Los productos del carrito deben pertenecer a una única tienda",
+    };
+  }
+
+  const [tenantId] = tenantIds;
 
   const itemsInOrder = products.reduce((count, p) => count + p.quantity, 0);
 
@@ -100,6 +118,7 @@ export async function placeOrder(
     tax,
     orderItems,
     userId,
+    tenantId,
     itemsInOrder,
     address,
     mapStock,

@@ -13,6 +13,7 @@ export type TNewProductToOrder = TProductToOrder & {
 
 export type TNewOrder = {
   readonly userId: string;
+  readonly tenantId: string;
   readonly itemsInOrder: number;
   readonly subtotal: number;
   readonly tax: number;

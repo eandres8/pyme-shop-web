@@ -33,24 +33,33 @@ describe("getPaginatedOrders", () => {
     });
   });
 
-  it("returns order list when user is admin", async () => {
+  it("returns order list scoped to the session tenant when user is admin", async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mockedAuth.mockResolvedValue({ user: { role: "admin" } } as any);
+    mockedAuth.mockResolvedValue({ user: { role: "admin", tenant: "tenant-1" } } as any);
     const orders = [Order.fromEntity({ id: "order-1" })];
     mockOrderRepository.listOrders.mockResolvedValue(Result.success(orders));
 
     const result = await getPaginatedOrders();
 
     expect(result.success).toBe(true);
+    expect(mockOrderRepository.listOrders).toHaveBeenCalledWith("tenant-1");
   });
 
   it("returns failure when repository returns an error", async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mockedAuth.mockResolvedValue({ user: { role: "admin" } } as any);
+    mockedAuth.mockResolvedValue({ user: { role: "admin", tenant: "tenant-1" } } as any);
     mockOrderRepository.listOrders.mockResolvedValue(Result.failure(new Error("DB error")));
 
     const result = await getPaginatedOrders();
 
     expect(result).toEqual({ success: false, message: "DB error" });
+  });
+
+  it("throws when the admin session has no tenant", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mockedAuth.mockResolvedValue({ user: { role: "admin" } } as any);
+
+    await expect(getPaginatedOrders()).rejects.toThrow();
+    expect(mockOrderRepository.listOrders).not.toHaveBeenCalled();
   });
 });

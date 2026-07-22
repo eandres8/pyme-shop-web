@@ -26,6 +26,8 @@ const mockProducts: TProductToOrder[] = [
   { productId: "prod-2", quantity: 1, size: "L" },
 ];
 
+const mockTenant = (id: string) => ({ id, name: "Store", slug: "store", address: "", phone: "" });
+
 const mockAddress: TFormUserAddress = {
   firstName: "John",
   lastName: "Doe",
@@ -66,8 +68,8 @@ describe("placeOrder", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockedAuth.mockResolvedValue({ user: { id: "user-1" } } as any);
 
-    const prod1 = Product.fromJson({ id: "prod-1", price: 100 });
-    const prod2 = Product.fromJson({ id: "prod-2", price: 50 });
+    const prod1 = Product.fromJson({ id: "prod-1", price: 100, tenant: mockTenant("tenant-1") });
+    const prod2 = Product.fromJson({ id: "prod-2", price: 50, tenant: mockTenant("tenant-1") });
     mockProductRepository.listProductsByIds.mockResolvedValue(Result.success([prod1, prod2]));
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,6 +85,7 @@ describe("placeOrder", () => {
     expect(result.success).toBe(true);
     expect(capturedPayload).toBeDefined();
     expect(capturedPayload.userId).toBe("user-1");
+    expect(capturedPayload.tenantId).toBe("tenant-1");
     expect(capturedPayload.itemsInOrder).toBe(3);
     expect(capturedPayload.subtotal).toBe(250);
     expect(capturedPayload.tax).toBe(37.5);
@@ -107,7 +110,7 @@ describe("placeOrder", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mockedAuth.mockResolvedValue({ user: { id: "user-1" } } as any);
 
-    const prod1 = Product.fromJson({ id: "prod-1", price: 100 });
+    const prod1 = Product.fromJson({ id: "prod-1", price: 100, tenant: mockTenant("tenant-1") });
     mockProductRepository.listProductsByIds.mockResolvedValue(Result.success([prod1]));
     mockOrderRepository.trxNewOrder.mockResolvedValue(
       Result.failure(new Error("Order failed")),
@@ -116,5 +119,19 @@ describe("placeOrder", () => {
     const result = await placeOrder(mockProducts, mockAddress);
 
     expect(result).toEqual({ success: false, message: "Order failed" });
+  });
+
+  it("rejects a cart with products from different tenants", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mockedAuth.mockResolvedValue({ user: { id: "user-1" } } as any);
+
+    const prod1 = Product.fromJson({ id: "prod-1", price: 100, tenant: mockTenant("tenant-1") });
+    const prod2 = Product.fromJson({ id: "prod-2", price: 50, tenant: mockTenant("tenant-2") });
+    mockProductRepository.listProductsByIds.mockResolvedValue(Result.success([prod1, prod2]));
+
+    const result = await placeOrder(mockProducts, mockAddress);
+
+    expect(result.success).toBe(false);
+    expect(mockOrderRepository.trxNewOrder).not.toHaveBeenCalled();
   });
 });

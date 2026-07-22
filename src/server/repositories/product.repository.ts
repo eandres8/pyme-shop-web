@@ -197,6 +197,15 @@ export function ProductRepository(client: PrismaClient): IProductRepository {
         let productData: Partial<TProductEntity>;
 
         if (id) {
+          const existingProduct = await client.product.findFirst({
+            where: { id },
+            select: { tenant_id: true },
+          });
+
+          if (!existingProduct || existingProduct.tenant_id !== tenantId) {
+            throw new Error("No tienes permisos para modificar este producto");
+          }
+
           productData = (await client.product.update({
             where: { id },
             data: {

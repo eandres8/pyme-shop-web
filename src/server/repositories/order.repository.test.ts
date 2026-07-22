@@ -97,6 +97,7 @@ describe('OrderRepository', () => {
   describe('trxNewOrder', () => {
     const basePayload: TNewOrder = {
       userId: 'user-1',
+      tenantId: 'tenant-1',
       itemsInOrder: 2,
       subtotal: 100,
       tax: 16,
@@ -142,6 +143,30 @@ describe('OrderRepository', () => {
       if (result.isOk) {
         expect(result.data).toBeInstanceOf(Order);
       }
+    });
+
+    it('persists tenant_id from the payload on order creation', async () => {
+      mockClient.$transaction.mockImplementation(async (cb: (...args: unknown[]) => unknown) => {
+        mockTx.product.update.mockResolvedValue({ id: 'prod-1', title: 'P1', in_stock: 5 });
+        mockTx.order.create.mockResolvedValue(mockOrderEntity);
+        mockTx.orderAddress.create.mockResolvedValue({});
+
+        return (cb(mockTx) as Promise<unknown>).then(() => ({
+          order: mockOrderEntity,
+          address: {},
+          updatedProducts: [{ id: 'prod-1', in_stock: 5 }],
+        }));
+      });
+
+      await repo.trxNewOrder(basePayload);
+
+      expect(mockTx.order.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            tenant_id: 'tenant-1',
+          }),
+        }),
+      );
     });
 
     it('returns Result.failure when stock is insufficient', async () => {
