@@ -5,19 +5,21 @@ import { usePathname } from "next/navigation";
 import { IoSearchOutline, IoCartOutline } from 'react-icons/io5';
 
 import { titleFont } from "@/src/config/fonts";
-import { useCartStore, useUIStore } from "@/src/client/stores";
+import { useCartStore, useTenantStore, useUIStore } from "@/src/client/stores";
 import { useHydrateValidate } from "@/src/client/data/hooks";
+import { textFormat } from "@/src/shared/utils";
 
 // First segments that are NOT store slugs (session-scoped / global areas).
 // On these routes there is no store context so storefront links fall back to root.
-const NON_STORE_SEGMENTS = new Set([
+export const NON_STORE_SEGMENTS = new Set([
   "admin", "cart", "checkout", "orders", "profile", "products",
-  "empty", "search", "auth", "api", "product", "category",
+  "empty", "search", "auth", "api", "product", "category", "landing",
 ]);
 
 export const TopMenu = () => {
   const closeMenu = useUIStore((state) => state.openSideMenu);
   const totalItemsInCart = useCartStore((state) => state.getTotalItems());
+  const tenantName = useTenantStore((state) => state.name);
   const pathname = usePathname();
 
   const isLoaded = useHydrateValidate();
@@ -26,12 +28,14 @@ export const TopMenu = () => {
   const storeSlug = firstSegment && !NON_STORE_SEGMENTS.has(firstSegment) ? firstSegment : "";
   const storeBase = storeSlug ? `/${storeSlug}` : "";
 
+  const brandSuffix = textFormat(tenantName || "Shop").toTitle();
+
   return (
     <nav className="flex px-5 justify-between items-center w-full">
       <div>
         <Link href={storeBase || "/"}>
           <span className={`${titleFont.className} antialiased font-bold`}>Pyme</span>
-          <span> | Shop</span>
+          <span> | {brandSuffix}</span>
         </Link>
       </div>
 

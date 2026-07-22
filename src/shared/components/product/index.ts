@@ -1,3 +1,4 @@
+export * from './add-to-cart/AddToCart';
 export * from './product-grid/ProductGrid';
 export * from './product-grid/ProductGridItem';
 export * from './quantity-selector/QuantitySelector';

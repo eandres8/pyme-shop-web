@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { getTenantBySlug } from "@/src/server/actions/tenant/get-tenant-by-slug/get-tenant-by-slug";
 import { tenantRepository } from "@/src/server/providers";
+import { TenantProvider } from "@/src/client/providers/tenant-provider/tenant-provider";
 
 // Per-store ISR: pre-render known store slugs, generate unknown ones on demand
 // and revalidate them within this window (moved off the former global home page).
@@ -31,5 +32,10 @@ export default async function StoreLayout({ children, params }: Props) {
     notFound();
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <TenantProvider name={tenant.name} slug={tenant.slug} />
+      {children}
+    </>
+  );
 }

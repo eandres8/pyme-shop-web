@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Serve the public storefront under a `[storeSlug]` URL segment so every storefront view is scoped to the tenant that owns the slug, while session-scoped and global areas remain at the application root.
+Serve the public storefront under an optional `[storeSlug]` URL segment so every storefront view is scoped to the tenant that owns the slug when present, or runs in global (wildcard) mode when absent, while session-scoped and global areas remain at the application root.
 
 ## Requirements
 
 ### Requirement: Store slug segment scopes the public storefront
 
-The public storefront SHALL be served under a `[storeSlug]` URL segment (`/<store-slug>/...`), and all storefront product queries SHALL be constrained to the tenant that owns that slug. The slug SHALL be resolved to a tenant via `tenantRepository.findBySlug`.
+The public storefront MAY be served under an optional `[storeSlug]` URL segment (`/<store-slug>/...`). When a slug is present, all storefront product queries SHALL be constrained to the tenant that owns that slug, resolved via `tenantRepository.findBySlug`. When no slug is present, the storefront SHALL run in global (unfiltered) mode as defined by the `storefront-global-catalog` capability. The slugged form remains the shareable, tenant-scoped view.
 
 #### Scenario: Home catalog scoped to store
 
@@ -26,6 +26,12 @@ The public storefront SHALL be served under a `[storeSlug]` URL segment (`/<stor
 - **WHEN** a visitor opens `/<store-slug>/product/<product-slug>`
 - **THEN** the product SHALL be resolved within the tenant of `<store-slug>`
 - **AND** a product slug that exists only under a different tenant SHALL NOT be shown
+
+#### Scenario: No slug runs in global mode
+
+- **WHEN** a visitor opens a slug-less storefront route (`/`, `/category/<id>`, `/product/<product-slug>`)
+- **THEN** queries SHALL run without a `tenant_id` filter
+- **AND** the request SHALL NOT be treated as an unknown store slug
 
 ### Requirement: Unknown store slug returns 404
 
@@ -66,7 +72,7 @@ Storefront pages under `[storeSlug]` SHALL be rendered using Incremental Static 
 
 ### Requirement: Storefront internal links are slug-relative
 
-Internal storefront navigation (top menu, sidebar catalog links, pagination) SHALL target paths relative to the current store slug so navigation stays within the same store.
+Internal storefront navigation (top menu, sidebar catalog links, pagination) SHALL target paths relative to the current store slug when a slug is in context, and SHALL target slug-less paths when in global mode, so navigation stays within the current mode.
 
 #### Scenario: Category link keeps the store context
 
@@ -75,8 +81,13 @@ Internal storefront navigation (top menu, sidebar catalog links, pagination) SHA
 
 #### Scenario: Pagination keeps the store context
 
-- **WHEN** a visitor advances pages in the storefront catalog
+- **WHEN** a visitor advances pages in the storefront catalog under a store slug
 - **THEN** the pagination links SHALL preserve the `<store-slug>` segment
+
+#### Scenario: Global navigation omits the slug
+
+- **WHEN** a visitor in global (slug-less) mode follows a category or pagination link
+- **THEN** the destination SHALL be slug-less (no `<store-slug>` segment)
 
 ### Requirement: Session-scoped and global areas stay unslugged
 

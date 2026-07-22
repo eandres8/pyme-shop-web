@@ -35,7 +35,9 @@ export const ProductGridItem: React.FC<Props> = ({ product: p }) => {
         <Link className="hover:text-blue-600 hover:cursor-pointer" href={`/product/${product.slug}`}>{product.title}</Link>
         <div className="flex justify-between">
           <span className="font-bold">{currencyFormat(product.price)}</span>
-          <span className="text-xs px-2 py-1 rounded-xl bg-gray-100">{textFormat(product.tenant.name).toTitle()}</span>
+          <Link href={`/${product.tenant.slug}`} className="hover:text-blue-700">
+            <span className="text-xs px-2 py-1 rounded-xl bg-gray-100">{textFormat(product.tenant.name).toTitle()}</span>
+          </Link>
         </div>
       </div>
     </div>

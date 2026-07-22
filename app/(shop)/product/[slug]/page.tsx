@@ -3,52 +3,46 @@ export const revalidate = 604800; // 7 days
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from "next/navigation";
 
-
 import { titleFont } from "@/src/config/fonts";
-import {
-  AddToCart,
-  ProductMobileSlideShow,
-  ProductSlideShow,
-  StockLabel,
-} from "@/src/shared/components/product";
+import { AddToCart } from "@/src/shared/components/product/add-to-cart/AddToCart";
+import { ProductMobileSlideShow } from "@/src/shared/components/product/slideshow/ProductMobileSlideShow";
+import { ProductSlideShow } from "@/src/shared/components/product/slideshow/ProductSlideShow";
+import { StockLabel } from "@/src/shared/components/product/stock-label/StockLabel";
 import { getProductBySlug } from "@/src/server/actions";
-import { getTenantBySlug } from "@/src/server/actions/tenant/get-tenant-by-slug/get-tenant-by-slug";
 import { textFormat } from '@/src/shared/utils';
 
 type Props = {
-  params: Promise<{ storeSlug: string; slug: string }>;
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata(
   { params }: Props,
   _parent: ResolvingMetadata
 ): Promise<Metadata> {
-  const { storeSlug, slug } = await params;
+  const { slug } = await params;
 
-  const tenant = await getTenantBySlug(storeSlug);
-  const product = await getProductBySlug(slug, tenant?.id);
+  const product = await getProductBySlug(slug);
 
   return {
     title: product.title,
     description: product.description,
+    // The tenant-scoped URL is the unambiguous, owned location for this
+    // product; the global route stays crawlable but defers ranking to it.
+    alternates: product.tenant.slug
+      ? { canonical: `/${product.tenant.slug}/product/${slug}` }
+      : undefined,
     openGraph: {
       title: product.title,
       description: product.description,
-      images:[`/images/products/${product.images.at(1)}`]
+      images: [`/images/products/${product.images.at(1)}`]
     }
   }
 }
 
-export default async function ProductDetail({ params }: Props) {
-  const { storeSlug, slug } = await params;
+export default async function GlobalProductDetail({ params }: Props) {
+  const { slug } = await params;
 
-  const tenant = await getTenantBySlug(storeSlug);
-
-  if (!tenant) {
-    notFound();
-  }
-
-  const product = await getProductBySlug(slug, tenant.id);
+  const product = await getProductBySlug(slug);
 
   if (!product.id) {
     notFound();
@@ -67,7 +61,7 @@ export default async function ProductDetail({ params }: Props) {
       </div>
 
       <div className="col-span-1 px-5">
-        <StockLabel slug={product.slug} tenantId={tenant.id} />
+        <StockLabel slug={product.slug} />
 
         <h1 className={`${titleFont.className} antialiased font-bold text-xl`}>
           {product.title}
